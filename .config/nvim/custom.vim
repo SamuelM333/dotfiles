@@ -1,6 +1,7 @@
 "" Plugins
 Plug 'hashivim/vim-terraform'
 Plug 'tomasiser/vim-code-dark'
+Plug 'yasuhiroki/circleci.vim'
 
 "" DTree configuration
 let g:NERDTreeChDirMode=2
@@ -30,6 +31,9 @@ let fancy_symbols_enabled = 1
 "" Terraform
 let g:terraform_align=1
 let g:terraform_fmt_on_save=1
+
+"" CircleCI
+let g:circleci_omnifunc_enable=1
 
 "" Indentation
 set ts=4 sw=4

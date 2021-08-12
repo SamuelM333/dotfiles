@@ -10,22 +10,23 @@ function check_git_prompt_info() {
     if git rev-parse --git-dir > /dev/null 2>&1; then
         if [[ -z $(git_prompt_info 2> /dev/null) ]]; then
             echo "%{$fg[blue]%}detached-head%{$reset_color%}) $(git_prompt_status)
-%{$fg[yellow]%}→ "
+%{$fg[yellow]%}→  "
         else
             echo "$(git_prompt_info 2> /dev/null) $(git_prompt_status)
-%{$fg_bold[cyan]%}→ "
+%{$fg_bold[cyan]%}→  "
         fi
     else
-        echo "%{$fg_bold[cyan]%}→ "
+        echo "%{$fg_bold[cyan]%}→  "
     fi
 }
 
 function get_right_prompt() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
-        echo -n "$(git_prompt_short_sha)%{$reset_color%}"
-    else
-        echo -n "%{$reset_color%}"
-    fi
+    echo -n "$(aws_prompt_info)%{$reset_color%}"
+    #if git rev-parse --git-dir > /dev/null 2>&1; then
+        #echo -n "$(git_prompt_short_sha)%{$reset_color%}"
+    #else
+        #echo -n "%{$reset_color%}"
+    #fi
 }
 
 PROMPT=$'\n'$LAMBDA'\

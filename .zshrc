@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -8,7 +15,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="lambda-mod"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
@@ -72,13 +79,12 @@ plugins=(
     python
     gh
     terraform
+    nomad
     httpie
     safe-paste
     colorize
     dnf
-    #timer
-    #zbell
-    zsh_reload
+    pyenv
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -112,7 +118,7 @@ export EDITOR='nvim'
 alias vim="nvim"
 alias bell="tput bel"
 alias zshconfig="vim ~/.zshrc"
-alias zshreload="src"
+alias zshreload="exec zsh"
 alias awsconfig-print="cat ~/.aws/config"
 alias awsconfig-edit="vim ~/.aws/config"
 #alias code="codium"
@@ -130,15 +136,6 @@ eval "$(pyenv virtualenv-init -)"
 alias workon="pyenv activate"
 alias deactivate="pyenv deactivate"
 
-# direnv
-_direnv_hook() {
-  eval "$("/usr/bin/direnv" export zsh)";
-}
-typeset -ag precmd_functions;
-if [[ -z ${precmd_functions[(r)_direnv_hook]} ]]; then
-  precmd_functions+=_direnv_hook;
-fi
-
 # tfenv
 export PATH="$HOME/.bin/tfenv/bin:$PATH"
 
@@ -152,20 +149,11 @@ export GPG_TTY=$(tty)
 export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 
-# jira
-export JIRA_API_TOKEN=
-source $HOME/.config/.jira/zsh.sh
-alias jcs="jira sprint list --current -a$(jira me)"
-
 # timer
 export TIMER_FORMAT='[%d]'
 export TIMER_PRECISION=2
 
-# aws-vault
-alias ave="aws-vault exec"
-alias avl="aws-vault list"
+# complete -o nospace -C ~/.bin/tfenv/bin/terraform terraform
 
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/bin/vault vault
-
-complete -o nospace -C ~/.bin/tfenv/bin/terraform terraform
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

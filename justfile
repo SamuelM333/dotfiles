@@ -1,6 +1,39 @@
 default:
     @just --list
 
+# Generate shell completions for CLI tools
+generate-completions:
+    #!/usr/bin/env bash
+    echo "==> Generating Zsh completions..."
+    mkdir -p ~/.zsh/completions
+
+    if command -v just &> /dev/null; then
+        just --completions zsh > ~/.zsh/completions/_just
+    fi
+
+    if command -v gh &> /dev/null; then
+        gh completion -s zsh > ~/.zsh/completions/_gh
+    fi
+
+    if command -v glab &> /dev/null; then
+        glab completion -s zsh > ~/.zsh/completions/_glab
+    fi
+
+    if command -v docker &> /dev/null; then
+        docker completion zsh > ~/.zsh/completions/_docker
+    fi
+
+    if command -v podman &> /dev/null; then
+        podman completion zsh > ~/.zsh/completions/_podman
+    fi
+
+    if command -v terraform &> /dev/null; then
+        echo '#compdef terraform' > ~/.zsh/completions/_terraform
+        echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zsh/completions/_terraform
+        echo 'complete -o nospace -C $(which terraform) terraform' >> ~/.zsh/completions/_terraform
+    fi
+    echo "==> Completions generated successfully!"
+
 install-software:
     @echo "==> Ensuring Flathub remote exists..."
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -20,5 +53,5 @@ config-git:
     git config --global user.name "Samuel Murillo"
 
 
-bootstrap: install-software apply-configs config-git
+bootstrap: install-software apply-configs config-git generate-completions
     @echo "==> Silverblue development environment fully bootstrapped!"

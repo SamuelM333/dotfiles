@@ -1,5 +1,8 @@
 SHELL=/usr/bin/zsh
 
+# Load custom completions
+fpath=(~/.zsh/completions $fpath)
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -78,12 +81,13 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Env vars
 export EDITOR="nvim"
+export PROTON_PASS_KEY_PROVIDER=fs
 
 # Aliases
 alias ls='ls --color=auto'
 alias vim='nvim'
 alias cat='bat'
-alias zshconfig="vim ~/.zshrc"
+alias zshconfig="chezmoi edit ~/.zshrc"
 alias zshreload="exec zsh"
 # Spotify cache
 alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"

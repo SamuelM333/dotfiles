@@ -1,2 +1,3 @@
 Brewfile
 justfile
+dot_zsh/completions/*

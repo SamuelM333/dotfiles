@@ -1,0 +1,25 @@
+{
+    "window.titleBarStyle": "custom",
+    "editor.fontFamily": "'Jet Brains Mono', 'Cascadia Code', 'Droid Sans Mono', 'monospace', monospace, 'Symbols Nerd Font Mono'",
+    "update.mode": "none",
+    "files.associations": {
+        "*.hcl": "hcl"
+    },
+    "vim.handleKeys": {
+        "<C-f>": false,
+        "<C-r>": false,
+        "<C-d>": true,
+        "<C-s>": false,
+        "<C-z>": false
+    },
+    "vim.smartRelativeLine": true,
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "window.autoDetectColorScheme": true,
+    "http.systemCertificatesNode": true,
+    "geminicodeassist.project": "intrepid-oath-nqrk4",
+    "geminicodeassist.inlineSuggestions.enableAuto": false,
+    "gitlab.duoChat.enabled": false,
+    "gitlab.duoAgentPlatform.enabled": false,
+    "gitlab.duoCodeSuggestions.enabled": false,
+    "git.autofetch": true
+}

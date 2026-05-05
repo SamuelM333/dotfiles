@@ -41,6 +41,8 @@ zinit snippet OMZP::vault
 # zinit snippet OMZP::aws
 # zinit snippet OMZP::command-not-found
 
+autoload -Uz zmv
+
 # Load completions
 autoload -Uz compinit && compinit
 
@@ -58,6 +60,14 @@ bindkey "^[[1;3C" forward-word
 bindkey "^[[1;3D" backward-word
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
+
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+bindkey ' ' magic-space
+
+bindkey -s '^Xgc' 'git commit -m ""\C-b'
+bindkey -s '^Xgcn' 'git commit --no-verify -m ""\C-b'
 
 # History
 HISTSIZE=5000
@@ -81,27 +91,61 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Env vars
 export EDITOR="nvim"
-export PROTON_PASS_KEY_PROVIDER=fs
 
 # Aliases
 alias ls='ls --color=auto'
 alias vim='nvim'
+alias vi='nvim'
 alias cat='bat'
 alias zshconfig="chezmoi edit ~/.zshrc"
 alias zshreload="exec zsh"
-# Spotify cache
-alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
+
+# Alias suffixes
+alias -s json=jless
+alias -s md=cat
+alias -s txt=cat
+alias -s log=cat
+alias -s py='$EDITOR'
+alias -s tf='$EDITOR'
+
+# Global alias
+# Redirect stderr to /dev/null
+alias -g NE='2>/dev/null'
+
+# Redirect stdout to /dev/null
+alias -g NO='>/dev/null'
+
+# Redirect both stdout and stderr to /dev/null
+alias -g NUL='>/dev/null 2>&1'
+
+# Pipe to jq
+alias -g J='| jq'
 
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(direnv hook zsh)"
 
+{{/* # TODO: Use hostname */}}
+{{- if eq .chezmoi.os "darwin" -}}
+
+# Copy output to clipboard (macOS)
+alias -g C='| pbcopy'
+
+{{- else if eq .chezmoi.os "linux" -}}
+
+# Spotify cache
+alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
+
 # Homelab
 export NOMAD_ADDR=http://192.168.0.4:4646
 export VAULT_ADDR=http://192.168.0.4:8200
+
+export PROTON_PASS_KEY_PROVIDER=fs
 export VAULT_TOKEN='{{ protonPass "pass://Development/Vault/Root token" }}'
+{{/* # TODO: Read token by hostname */}}
 export GITLAB_ACCESS_TOKEN='{{ protonPass "pass://Development/GitLab/thinkpad-e16 token" }}'
 
 # AI 
 # GEMINI_API_KEY=""
+{{- end -}}

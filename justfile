@@ -38,7 +38,7 @@ install-software:
     @echo "==> Ensuring Flathub remote exists..."
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     @echo "==> Installing software from Brewfile..."
-    brew bundle --file=Brewfile
+    brew bundle --jobs auto
     @echo "==> All software installed successfully!"
 
 apply-configs:

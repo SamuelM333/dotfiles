@@ -37,9 +37,9 @@ brew "yq"
 brew "zoxide"
 
 {{/* TODO: Use hostname */}}
-{{- if eq .chezmoi.os "darwin" -}}
+{{- if eq .chezmoi.os "darwin" }}
 
-{{- else if eq .chezmoi.os "linux" -}}
+{{- else if eq .chezmoi.os "linux" }}
 brew "texlive"
 brew "uutils-coreutils"
 brew "dysk"
@@ -108,4 +108,4 @@ vscode "ms-vscode.remote-explorer"
 vscode "nefrob.vscode-just-syntax"
 vscode "vscodevim.vim"
 
-{{- end -}}
+{{- end }}

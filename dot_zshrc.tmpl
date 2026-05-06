@@ -1,4 +1,3 @@
-SHELL=/usr/bin/zsh
 
 # Load custom completions
 fpath=(~/.zsh/completions $fpath)
@@ -120,12 +119,14 @@ eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(direnv hook zsh)"
 
-{{- if eq .chezmoi.os "darwin" -}}
-# Copy output to clipboard (macOS)
+{{- if eq .chezmoi.os "darwin" }}
+SHELL=/bin/zsh
+# Copy output to clipboard
 alias -g C='| pbcopy'
-{{- end -}}
+{{- end }}
 
-{{- if eq .chezmoi.os "linux" -}}
+{{- if eq .chezmoi.os "linux" }}
+SHELL=/usr/bin/zsh
 # Spotify cache
 alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
 
@@ -140,4 +141,4 @@ export GITLAB_ACCESS_TOKEN='{{ protonPass "pass://Development/GitLab/thinkpad-e1
 
 # AI
 # GEMINI_API_KEY=""
-{{- end -}}
+{{- end }}

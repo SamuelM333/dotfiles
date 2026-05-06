@@ -58,6 +58,7 @@ bindkey ' ' magic-space
 
 bindkey -s '^Xgc' 'git commit -m ""\C-b'
 bindkey -s '^Xgcn' 'git commit --no-verify -m ""\C-b'
+bindkey -s '^Xgp' 'git push -u origin $(git_current_branch)'
 
 # History
 HISTSIZE=5000
@@ -81,10 +82,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Env vars
 export EDITOR="nvim"
-
-{{/* TODO: Better path */}}
-{{/* TODO: Brewfile per env */}}
-export HOMEBREW_BUNDLE_FILE="~/Brewfile"
+export HOMEBREW_BUNDLE_FILE="~/.config/brew/Brewfile"
 
 # Aliases
 alias ls='ls --color=auto'
@@ -92,6 +90,8 @@ alias vim='nvim'
 alias vi='nvim'
 # alias cat='bat'
 alias zshconfig="chezmoi edit ~/.zshrc"
+
+{{/* TODO: This sets the term title */}}
 alias zshreload="exec zsh"
 
 # Alias suffixes
@@ -120,14 +120,12 @@ eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(direnv hook zsh)"
 
-{{/* TODO: Use hostname */}}
 {{- if eq .chezmoi.os "darwin" -}}
-
 # Copy output to clipboard (macOS)
 alias -g C='| pbcopy'
+{{- end -}}
 
-{{- else if eq .chezmoi.os "linux" -}}
-
+{{- if eq .chezmoi.os "linux" -}}
 # Spotify cache
 alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
 
@@ -140,6 +138,6 @@ export VAULT_TOKEN='{{ protonPass "pass://Development/Vault/Root token" }}'
 {{/* TODO: Read token by hostname */}}
 export GITLAB_ACCESS_TOKEN='{{ protonPass "pass://Development/GitLab/thinkpad-e16 token" }}'
 
-# AI 
+# AI
 # GEMINI_API_KEY=""
 {{- end -}}

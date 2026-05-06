@@ -1,5 +1,3 @@
-
-{{- if eq .chezmoi.os "linux" -}}
 #!/usr/bin/env bash
 
 power_output=$(razer-cli read power ac)
@@ -19,4 +17,3 @@ fi
 
 razer-cli write power ac 1
 razer-cli write fan ac 5000
-{{- end -}}

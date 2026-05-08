@@ -15,7 +15,7 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 
 # Load Oh My Posh
-eval "$(oh-my-posh init zsh --config 'half-life')"
+eval "$(oh-my-posh init zsh --config '~/.config/oh-my-posh/ys-lambda.omp.json')"
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -127,6 +127,7 @@ alias -g C='| pbcopy'
 
 {{- if eq .chezmoi.os "linux" }}
 SHELL=/usr/bin/zsh
+
 # Spotify cache
 alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
 
@@ -134,10 +135,11 @@ alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/
 export NOMAD_ADDR=http://192.168.0.4:4646
 export VAULT_ADDR=http://192.168.0.4:8200
 
+# Secrets
 export PROTON_PASS_KEY_PROVIDER=fs
-export VAULT_TOKEN='{{ protonPass "pass://Development/Vault/Root token" }}'
-{{/* TODO: Read token by hostname */}}
-export GITLAB_ACCESS_TOKEN='{{ protonPass "pass://Development/GitLab/thinkpad-e16 token" }}'
+export VAULT_TOKEN={{- protonPass "pass://Development/Vault/Root token" -}}
+{{- /* TODO: Read token by hostname */ -}}
+export GITLAB_ACCESS_TOKEN={{- protonPass "pass://Development/GitLab/thinkpad-e16 token" -}}
 
 # AI
 # GEMINI_API_KEY=""

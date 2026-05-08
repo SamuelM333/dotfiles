@@ -1,0 +1,95 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "upgrade": {
+    "source": "cdn",
+    "interval": "168h",
+    "auto": false,
+    "notice": false
+  },
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "options": {
+            "fetch_version": false
+          },
+          "template": "({{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }})",
+          "foreground": "white",
+          "type": "python",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "template": "# ",
+          "foreground": "#D75F00",
+          "type": "text",
+          "style": "plain"
+        },
+        {
+          "template": " % ",
+          "foreground": "red",
+          "type": "root",
+          "style": "plain"
+        },
+        {
+          "template": "<#D75F00>{{ .UserName }}</> <darkGray>@</> <#D75F00>{{ .HostName }}</> ",
+          "type": "session",
+          "style": "plain"
+        },
+        {
+          "options": {
+            "style": "full"
+          },
+          "template": "<darkGray>in </>{{ .Path }} ",
+          "foreground": "cyan",
+          "type": "path",
+          "style": "plain"
+        },
+        {
+          "options": {
+            "fetch_status": true
+          },
+          "template": "<darkGray>on</> <white>git:</><cyan>{{ .HEAD }}</>{{ if .Working.Changed }}<red> x</>{{ end }} ",
+          "type": "git",
+          "style": "plain"
+        },
+        {
+          "template": "[{{ .CurrentDate | date .Format }}]",
+          "foreground": "darkGray",
+          "type": "time",
+          "style": "plain"
+        },
+        {
+          "template": " C:{{ if gt .Code 0 }}{{ .Code }}{{ end }} ",
+          "foreground": "red",
+          "type": "status",
+          "style": "plain"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "template": "λ",
+          "foreground": "#D75F00",
+          "type": "text",
+          "style": "plain"
+        }
+      ],
+      "newline": true
+    }
+  ],
+  "console_title_template": "{{.UserName}}@{{.HostName}} | {{.Shell}} | {{.PWD}}",
+  "version": 4,
+  "final_space": true
+}

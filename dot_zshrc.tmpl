@@ -24,14 +24,9 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
 # Add in snippets
-# TODO: Make for_loop
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::git
 zinit snippet OMZP::terraform
-# zinit snippet OMZP::nomad
-zinit snippet OMZP::vault
-# zinit snippet OMZP::aws
-# zinit snippet OMZP::command-not-found
 
 autoload -Uz zmv
 
@@ -89,8 +84,6 @@ alias vim='nvim'
 alias vi='nvim'
 # alias cat='bat'
 alias zshconfig="chezmoi edit ~/.zshrc"
-
-{{/* TODO: This sets the term title */}}
 alias zshreload="exec zsh"
 
 # Alias suffixes

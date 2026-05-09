@@ -76,7 +76,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Env vars
 export EDITOR="nvim"
-export HOMEBREW_BUNDLE_FILE="~/.config/brew/Brewfile"
+export HOMEBREW_BUNDLE_FILE="~/.config/.homebrew/Brewfile"
 
 # Aliases
 alias ls='ls --color=auto'
@@ -122,7 +122,7 @@ alias -g C='| pbcopy'
 SHELL=/usr/bin/zsh
 
 # Spotify cache
-alias spotify_clean_cache="find $HOME/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
+alias spotify_clean_cache="find ~/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"
 
 # Homelab
 export NOMAD_ADDR=http://192.168.0.4:4646

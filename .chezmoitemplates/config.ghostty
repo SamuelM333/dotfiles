@@ -17,9 +17,7 @@ macos-icon = custom-style
 macos-icon-frame = plastic
 macos-icon-ghost-color = FFFFFF
 # font-thicken = true
-
-# TODO: Make param
-font-size = 12 
+font-size = {{ .ghostty_font_size }}
 
 # Retro terminal
 # TODO: Shortcut to toggle shader

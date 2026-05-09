@@ -1,6 +1,11 @@
 justfile
 dot_zsh/completions/*
 
+{{- if ne .chezmoi.os "darwin" }}
+{{- else if ne .chezmoi.os "linux" }}
+.config/ghostty/config.ghostty
+{{ end }}
+
 {{- if ne .chezmoi.hostname "AP9KVNLK961AD3" }}
 {{- end }}
 

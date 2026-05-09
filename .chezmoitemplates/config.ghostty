@@ -1,0 +1,5 @@
+command = "zsh"
+theme = light:Adwaita,dark:Adwaita Dark
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+right-click-action = copy-or-paste

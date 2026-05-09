@@ -13,6 +13,5 @@ dot_zsh/completions/*
 {{- end }}
 
 {{- if ne .chezmoi.hostname "blade15" }}
-.config/scopebuddy/scb.conf
-.bin/executable_scopebuddy*
+.config/scopebuddy/*
 {{- end }}

@@ -1,5 +1,4 @@
 command = "zsh"
-theme = light:Adwaita,dark:Adwaita Dark
 cursor-style-blink = true
 link-url = true
 clipboard-trim-trailing-spaces = true
@@ -8,23 +7,27 @@ window-inherit-font-size = true
 window-inherit-working-directory = true
 window-theme = system
 mouse-hide-while-typing = true
+font-size = {{ .ghostty_font_size -}}
 
-macos-auto-secure-input = true
-macos-secure-input-indication = true
-# ---
+{{ if .ghostty_retro_terminal }}
+theme = light:Xcode Light hc,dark:Xcode Dark hc
+custom-shader = ./shaders/ghostty-shaders/retro-terminal.glsl
+custom-shader = ./shaders/ghostty-shaders/tft.glsl
+custom-shader = ./shaders/ghostty-shaders/bloom.glsl
+{{ else }}
+theme = light:Adwaita,dark:Adwaita Dark
+{{ end }}
+
+{{ if eq .chezmoi.os "darwin" }}
 macos-titlebar-proxy-icon = hidden
 macos-icon = custom-style
 macos-icon-frame = plastic
 macos-icon-ghost-color = FFFFFF
-# font-thicken = true
-font-size = {{ .ghostty_font_size }}
-
-# Retro terminal
-# TODO: Shortcut to toggle shader
-# theme = light:Xcode Light hc,dark:Xcode Dark hc
-# custom-shader = ./shaders/ghostty-shaders/tft.glsl
-# custom-shader = ./shaders/ghostty-shaders/retro-terminal.glsl
-# custom-shader = ./shaders/ghostty-shaders/bloom.glsl
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+window-colorspace = display-p3
+font-thicken = true
+{{ end -}}
 
 # ---
 # font-family = "SF Mono"

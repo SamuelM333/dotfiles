@@ -1,0 +1,16 @@
+#!/bin/bash
+
+{{ if eq .chezmoi.os "darwin" }}
+TARGET_FILE=""
+{{ else if eq .chezmoi.os "linux" }}
+TARGET_FILE={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl" | quote }}
+{{ end }}
+
+PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
+
+# Check if the target file exists before trying to patch
+if [ -f "$TARGET_FILE" ]; then
+    # -N (--forward): Ignores patches that appear to be already applied
+    # || true: Prevents the script from failing and halting 'chezmoi apply' if the patch was skipped
+    patch -N --silent "$TARGET_FILE" < "$PATCH_FILE" || true
+fi

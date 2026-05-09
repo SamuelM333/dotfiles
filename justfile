@@ -32,6 +32,18 @@ generate-completions:
         echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zsh/completions/_terraform
         echo 'complete -o nospace -C $(which terraform) terraform' >> ~/.zsh/completions/_terraform
     fi
+
+    if command -v nomad &> /dev/null; then
+        echo '#compdef nomad' > ~/.zsh/completions/_nomad
+        echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zsh/completions/_nomad
+        echo 'complete -o nospace -C $(which nomad) nomad' >> ~/.zsh/completions/_nomad
+    fi
+
+    if command -v vault &> /dev/null; then
+        echo '#compdef vault' > ~/.zsh/completions/_vault
+        echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zsh/completions/_vault
+        echo 'complete -o nospace -C $(which vault) vault' >> ~/.zsh/completions/_vault
+    fi
     echo "==> Completions generated successfully!"
 
 install-software:

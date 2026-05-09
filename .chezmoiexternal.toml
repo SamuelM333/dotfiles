@@ -1,0 +1,4 @@
+[".config/ghostty/shaders/ghostty-shaders"]
+    type = "git-repo"
+    url = "https://github.com/0xhckr/ghostty-shaders.git"
+    refreshPeriod = "168h" # 7 days

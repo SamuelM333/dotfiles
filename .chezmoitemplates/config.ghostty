@@ -2,4 +2,33 @@ command = "zsh"
 theme = light:Adwaita,dark:Adwaita Dark
 macos-auto-secure-input = true
 macos-secure-input-indication = true
-right-click-action = copy-or-paste
+# right-click-action = copy-or-paste
+
+# Retro terminal
+# TODO: Shortcut to toggle shader
+# theme = light:Xcode Light hc,dark:Xcode Dark hc
+# custom-shader = ~/.config/ghostty/shaders/tft.glsl
+# custom-shader = ~/.config/ghostty/shaders/retro-terminal.glsl
+# custom-shader = ~/.config/ghostty/shaders/bloom.glsl
+
+# ---
+
+# custom-shader = ./shaders/starfield.glsl
+# font-family = "SF Mono"
+font-size = 19
+font-thicken = true
+# quick-terminal-animation-duration = 0
+# keybind = global:super+grave_accent=toggle_quick_terminal
+cursor-style = block
+shell-integration-features = no-cursor
+cursor-style-blink = false
+link-url = true
+window-inherit-working-directory = true
+window-inherit-font-size = true
+window-theme = system
+clipboard-trim-trailing-spaces = true
+mouse-hide-while-typing = true
+macos-titlebar-proxy-icon = hidden
+macos-icon = custom-style
+macos-icon-frame = plastic
+macos-icon-ghost-color = FFFFFF

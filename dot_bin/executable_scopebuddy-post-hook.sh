@@ -1,3 +1,4 @@
+# Power profile
 power_integer=`cat $HOME/.config/scopebuddy/scopebuddy-razer-power-integer.txt`
 fan_rpm=`cat $HOME/.config/scopebuddy/scopebuddy-razer-fan-rpm.txt`
 

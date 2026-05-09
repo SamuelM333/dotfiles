@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Power profile
 power_output=$(razer-cli read power ac)
 fan_output=$(razer-cli read fan ac)
 

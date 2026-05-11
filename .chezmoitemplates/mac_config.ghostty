@@ -1,0 +1,8 @@
+# MacOS config
+font-thicken = true
+window-colorspace = display-p3
+cursor-style = block
+shell-integration-features = no-cursor
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+macos-titlebar-proxy-icon = hidden

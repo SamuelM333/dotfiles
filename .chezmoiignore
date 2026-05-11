@@ -1,12 +1,13 @@
 justfile
 dot_zsh/completions/*
 
-{{- if ne .chezmoi.hostname "AP9KVNLK961AD3" }}
+{{- if ne .chezmoi.os "darwin" }}
+Library
 {{- end }}
 
 {{- if ne .chezmoi.hostname "thinkpad-e16" }}
 {{- end }}
 
 {{- if ne .chezmoi.hostname "blade15" }}
-.config/scopebuddy/*
+.config/scopebuddy
 {{- end }}

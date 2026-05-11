@@ -1,3 +1,4 @@
+{{- /* chezmoi:template:left-delimiter=[[[ right-delimiter=]]] */ -}}
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
   "upgrade": {
@@ -39,13 +40,20 @@
           "style": "plain"
         },
         {
-          "template": "<#D75F00>{{ .UserName }}</> <darkGray>@</> <#D75F00>{{ .HostName }}</> ",
+          "template": "<#D75F00>{{ .UserName }}</> <darkGray>@</> ",
           "type": "session",
           "style": "plain"
         },
         {
+          "type": "text",
+          "style": "plain",
+          "foreground": "#D75F00",
+          "template": "<#D75F00>[[[- or .pretty_hostname .chezmoi.hostname -]]]</> "
+        },
+        {
           "options": {
-            "style": "full"
+            "style": "agnoster_short",
+            "max_depth": 3
           },
           "template": "<darkGray>in </>{{ .Path }} ",
           "foreground": "cyan",

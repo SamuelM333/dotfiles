@@ -1,0 +1,100 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "cli_default_open_behavior": "new_window",
+  "auto_install_extensions": {
+    "csv": true,
+    "dockerfile": true,
+    "docker-compose": true,
+    "ghostty": true,
+    "html": true,
+    "ini": true,
+    "jinja2": true,
+    "just": true,
+    "latex": true,
+    "make": true,
+    "mcp-server-github": true,
+    "nix": true,
+    "python-requirements": true,
+    "terraform": true,
+    "toml": true,
+    "xml": true
+  },
+  "terminal": {
+    "shell": {
+      "program": "zsh"
+    }
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "button": false,
+    "dock": "left"
+  },
+  "git_panel": {
+    "tree_view": true,
+    "dock": "left"
+  },
+  "context_servers": {
+    "mcp-server-github": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "read_only": true
+      }
+    }
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": false
+    }
+  },
+  "edit_predictions": {
+    "allow_data_collection": "no"
+  },
+  "icon_theme": "Zed (Default)",
+  "agent": {
+    "threads_sidebar": {
+      "position": "right"
+    },
+    "sandbox_permissions": {
+      "network_hosts": [
+        "api.github.com",
+        "raw.githubusercontent.com"
+      ]
+    },
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "title_bar": {
+    "show_menus": true
+  },
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
+    "antigravity-acp": {
+      "type": "registry"
+    }
+  },
+  "vim_mode": true,
+  "base_keymap": "JetBrains",
+  "ui_font_size": 18.0,
+  "buffer_font_size": 15.0,
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Ayu Dark",
+  },
+}

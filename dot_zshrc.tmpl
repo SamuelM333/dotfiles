@@ -79,14 +79,16 @@ export EDITOR="nvim"
 export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/Brewfile"
 export PATH="$PATH:$HOME/.bin"
 
+# Homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
 # Aliases
 alias ls='ls --color=auto'
 alias vim='nvim'
 alias vi='nvim'
-# alias cat='bat'
+alias cat='bat'
 alias zshconfig="chezmoi edit ~/.zshrc"
 alias zshreload="exec zsh"
-alias zed="flatpak run dev.zed.Zed"
 
 # Alias suffixes
 alias -s json=jless

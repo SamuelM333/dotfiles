@@ -1,6 +1,2 @@
-# Power profile
-power_integer=`cat $HOME/.config/scopebuddy/scopebuddy-razer-power-integer.txt`
-fan_rpm=`cat $HOME/.config/scopebuddy/scopebuddy-razer-fan-rpm.txt`
-
-razer-cli write power ac "$power_integer"
-razer-cli write fan ac "$fan_rpm"
+razer-cli write power ac 0
+razer-cli write fan ac 0

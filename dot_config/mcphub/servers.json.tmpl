@@ -1,5 +1,14 @@
 {
   "mcpServers": {
+    "markitdown-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "markitdown-mcp@0.0.1a4"
+      ],
+      "env": {}
+    }
+{{- if eq .pretty_hostname "nike-mac" }},
     "mcp-atlassian.nike": {
       "headers": {},
       "type": "streamable-http",
@@ -36,14 +45,6 @@
         "DATABRICKS_HOST": "https://nike-sole-react.cloud.databricks.com"
       }
     }{{- end }},
-    "markitdown-mcp": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": [
-        "markitdown-mcp@0.0.1a4"
-      ],
-      "env": {}
-    },
     "securecode-mcp-server": {
       "type": "stdio",
       "command": "uvx",
@@ -57,5 +58,6 @@
         "SECURECODE_CLIENT_SECRET": "{{ .securecode.client_secret }}"
       }
     }
+{{- end }}
   }
 }

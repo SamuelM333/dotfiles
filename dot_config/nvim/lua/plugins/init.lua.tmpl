@@ -119,6 +119,7 @@ return {
           include_model = true,
         },
       },
+{{- if eq .pretty_hostname "nike-mac" }}
       acp_providers = {
         cursor = {
           command = os.getenv("HOME") .. "/.local/bin/agent",
@@ -135,6 +136,7 @@ return {
         slash.refresh()
         return slash.commands
       end)(),
+{{- end }}
       system_prompt = function()
         local hub = require("mcphub").get_hub_instance()
         return hub and hub:get_active_servers_prompt() or ""
@@ -159,11 +161,14 @@ return {
     },
     config = function(_, opts)
       require("avante").setup(opts)
+{{- if eq .pretty_hostname "nike-mac" }}
       require("configs.avante_patches").apply()
+{{- end }}
 
       -- Debug mode prints to the message area and triggers "press enter" prompts.
       require("avante.config").override({ debug = false })
       pcall(vim.keymap.del, "n", "<leader>ad")
+{{- if eq .pretty_hostname "nike-mac" }}
 
       local slash = require("configs.avante_slash_commands")
 
@@ -177,6 +182,7 @@ return {
         slash.refresh()
         vim.notify("Avante skill slash commands refreshed", vim.log.levels.INFO)
       end, { desc = "Refresh Avante slash commands from Cursor skills" })
+{{- end }}
 
       -- ACP mode/model picker calls handle_submit before sidebar UI exists → nil containers.result
       local avante = require("avante")

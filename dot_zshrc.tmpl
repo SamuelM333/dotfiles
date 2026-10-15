@@ -84,9 +84,6 @@ export EDITOR="nvim"
 export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/Brewfile"
 export PATH="$PATH:$HOME/.bin"
 
-# Homebrew
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
 # Aliases
 alias ls='ls --color=auto'
 alias ll='ls -alh'
@@ -142,11 +139,11 @@ export NIKE_EMAIL="samuel.murillorodriguez@nike.com"
 
 # https://github.com/ankitpokhrel/jira-cli
 export JIRA_AUTH_TYPE=bearer
-export JIRA_API_TOKEN={{- (bitwardenFields "item" "Attlasian").jira_pat.value }}
+export JIRA_API_TOKEN={{- (bitwardenFields "item" "045ef734-dc69-462d-a733-b11800b2eb76").jira_pat.value }}
 
 # https://github.com/nike-internal/uip.dev-integration-system
 export JIRA_PAT=$JIRA_API_TOKEN
-export CONFLUENCE_PAT={{- (bitwardenFields "item" "Attlasian").confluence_pat.value }}
+export CONFLUENCE_PAT={{- (bitwardenFields "item" "045ef734-dc69-462d-a733-b11800b2eb76").confluence_pat.value }}
 export ANSWERS_JENKINS_URL="https://answers.jenkins.bmx.nikecloud.com"
 export ANSWERS_JENKINS_PAT={{- (bitwardenFields "item" "Jenkins Answers").pat.value }}
 
@@ -157,6 +154,9 @@ export TABLEAU_PAT={{- (bitwardenFields "item" "Tableau EMEA").pat.value }}
 
 {{- if eq .chezmoi.os "linux" }}
 SHELL=/usr/bin/zsh
+
+# Homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Spotify cache
 alias spotify_clean_cache="find ~/.var/app/com.spotify.Client/cache/spotify/ -name 'Singleton*' -delete"

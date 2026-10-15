@@ -11,3 +11,9 @@ Library
 {{- if ne .chezmoi.hostname "blade15" }}
 .config/scopebuddy
 {{- end }}
+
+{{- if ne .pretty_hostname "nike-mac" }}
+.config/nvim/lua/configs/avante_patches.lua
+.config/nvim/lua/configs/avante_skills.lua
+.config/nvim/lua/configs/avante_slash_commands.lua
+{{- end }}

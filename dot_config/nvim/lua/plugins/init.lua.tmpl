@@ -1,0 +1,243 @@
+return {
+  {
+    "WantDead/theme-sync.nvim",
+    lazy = false,
+    opts = {},
+    config = function()
+      require("theme-sync").setup({
+        on_change = function(mode)
+          require("nvconfig").base46.theme = mode == "dark" and "onedark" or "one_light"
+          require("base46").load_all_highlights()
+        end,
+      })
+    end,
+  },
+
+  {
+    "NeogitOrg/neogit",
+    cmd = "Neogit",
+    dependencies = {
+      "sindrets/diffview.nvim",
+    },
+    config = function()
+      require("neogit").setup(require "configs.neogit")
+    end,
+  },
+
+  {
+    "stevearc/conform.nvim",
+    -- event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
+  },
+
+  -- These are some examples, uncomment them if you want to see them work!
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require "configs.lspconfig"
+    end,
+  },
+
+  -- test new blink
+  -- { import = "nvchad.blink.lazyspec" },
+
+  -- Neovim 0.12 requires nvim-treesitter's `main` branch (NvChad still pins `master`).
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
+    priority = 1000,
+    build = function()
+      if vim.fn.executable "tree-sitter" == 1 then
+        vim.cmd.TSUpdate()
+      end
+    end,
+    opts = function()
+      local opts = require "configs.treesitter"
+      return { install_dir = opts.install_dir }
+    end,
+    config = function(_, opts)
+      require("nvim-treesitter").setup(opts)
+      vim.schedule(require("configs.treesitter").install_optional)
+    end,
+  },
+
+  -- MCP Hub (MCP server management + Avante integration)
+  {
+    "ravitemer/mcphub.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    build = 'bash -lc "npm install -g mcp-hub@latest"',
+    cmd = "MCPHub",
+    config = function()
+      require("mcphub").setup(require "configs.mcphub")
+    end,
+  },
+
+  -- Snacks input UI (used by Avante)
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      input = { enabled = true },
+    },
+  },
+
+  -- Avante AI
+  {
+    "yetone/avante.nvim",
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    -- ⚠️ must add this setting! ! !
+    build = vim.fn.has("win32") ~= 0
+        and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+        or "make",
+    event = "VeryLazy",
+    version = false, -- Never set this value to "*"! Never!
+    ---@module 'avante'
+    ---@type avante.Config
+    opts = {
+      instructions_file = "avante.md",
+      provider = {{ if eq .pretty_hostname "nike-mac" }}"cursor"{{ else }}"claude"{{ end }},
+      mode = "agentic",
+      debug = false,
+      log_level = vim.log.levels.WARN,
+      input = {
+        provider = "snacks",
+        provider_opts = {
+          title = "Avante Input",
+          icon = " ",
+        },
+      },
+      windows = {
+        spinner = {
+          thinking = { "🤔" },
+        },
+        sidebar_header = {
+          enabled = true,
+          include_model = true,
+        },
+      },
+      acp_providers = {
+        cursor = {
+          command = os.getenv("HOME") .. "/.local/bin/agent",
+          args = { "acp" },
+          auth_method = "cursor_login",
+          env = {
+            HOME = os.getenv("HOME"),
+            PATH = os.getenv("PATH"),
+          },
+        },
+      },
+      slash_commands = (function()
+        local slash = require("configs.avante_slash_commands")
+        slash.refresh()
+        return slash.commands
+      end)(),
+      system_prompt = function()
+        local hub = require("mcphub").get_hub_instance()
+        return hub and hub:get_active_servers_prompt() or ""
+      end,
+      custom_tools = function()
+        return {
+          require("mcphub.extensions.avante").mcp_tool(),
+        }
+      end,
+      disabled_tools = {
+        "list_files",
+        "search_files",
+        "read_file",
+        "create_file",
+        "rename_file",
+        "delete_file",
+        "create_dir",
+        "rename_dir",
+        "delete_dir",
+        "bash",
+      },
+    },
+    config = function(_, opts)
+      require("avante").setup(opts)
+      require("configs.avante_patches").apply()
+
+      -- Debug mode prints to the message area and triggers "press enter" prompts.
+      require("avante.config").override({ debug = false })
+      pcall(vim.keymap.del, "n", "<leader>ad")
+
+      local slash = require("configs.avante_slash_commands")
+
+      vim.api.nvim_create_autocmd("DirChanged", {
+        callback = function()
+          slash.refresh()
+        end,
+      })
+
+      vim.api.nvim_create_user_command("AvanteSkillsRefresh", function()
+        slash.refresh()
+        vim.notify("Avante skill slash commands refreshed", vim.log.levels.INFO)
+      end, { desc = "Refresh Avante slash commands from Cursor skills" })
+
+      -- ACP mode/model picker calls handle_submit before sidebar UI exists → nil containers.result
+      local avante = require("avante")
+      local api = require("avante.api")
+
+      local function ensure_sidebar()
+        if not avante.is_sidebar_open() then
+          avante.open_sidebar({ ask = false })
+        end
+      end
+
+      local select_acp_mode = api.select_acp_mode
+      api.select_acp_mode = function()
+        ensure_sidebar()
+        select_acp_mode()
+      end
+
+      local select_acp_model = api.select_acp_model
+      api.select_acp_model = function()
+        ensure_sidebar()
+        select_acp_model()
+      end
+    end,
+    dependencies = {
+      "ravitemer/mcphub.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "nvim-mini/mini.pick", -- for file_selector provider mini.pick
+      "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+      "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+      "ibhagwan/fzf-lua", -- for file_selector provider fzf
+      "stevearc/dressing.nvim", -- for input provider dressing
+      "folke/snacks.nvim", -- for input provider snacks
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
+  },
+}

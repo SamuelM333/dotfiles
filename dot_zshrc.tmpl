@@ -14,6 +14,11 @@ fi
 # Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
+# zsh-nvm lazy load
+export NVM_LAZY_LOAD=true
+export NVM_AUTO_USE=true
+zinit light lukechilds/zsh-nvm
+
 # Load Oh My Posh
 eval "$(oh-my-posh init zsh --config '~/.config/oh-my-posh/ys-lambda.omp.json')"
 
@@ -84,11 +89,13 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Aliases
 alias ls='ls --color=auto'
+alias ll='ls -alh'
 alias vim='nvim'
 alias vi='nvim'
 alias cat='bat'
 alias zshconfig="chezmoi edit ~/.zshrc"
 alias zshreload="exec zsh"
+alias vimconfig="chezmoi edit ~/.config/nvim"
 
 # Alias suffixes
 alias -s json=jless
@@ -116,10 +123,36 @@ eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(direnv hook zsh)"
 
-{{- if eq .chezmoi.os "darwin" }}
+{{- if eq .pretty_hostname "nike-mac" }}
 SHELL=/bin/zsh
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+dis serve start |& > /dev/null
+
 # Copy output to clipboard
 alias -g C='| pbcopy'
+
+# Corporate TLS inspection CA for Node-based CLIs (bw, npm, ...)
+if [[ ! -s "$HOME/.config/certs/corporate-ca.pem" ]]; then
+  mkdir -p "$HOME/.config/certs"
+  security find-certificate -a -p /Library/Keychains/System.keychain > "$HOME/.config/certs/corporate-ca.pem"
+fi
+export NODE_EXTRA_CA_CERTS="$HOME/.config/certs/corporate-ca.pem"
+
+export NIKE_EMAIL="samuel.murillorodriguez@nike.com"
+
+# https://github.com/ankitpokhrel/jira-cli
+export JIRA_AUTH_TYPE=bearer
+export JIRA_API_TOKEN={{- (bitwardenFields "item" "Attlasian").jira_pat.value }}
+
+# https://github.com/nike-internal/uip.dev-integration-system
+export JIRA_PAT=$JIRA_API_TOKEN
+export CONFLUENCE_PAT={{- (bitwardenFields "item" "Attlasian").confluence_pat.value }}
+export ANSWERS_JENKINS_URL="https://answers.jenkins.bmx.nikecloud.com"
+export ANSWERS_JENKINS_PAT={{- (bitwardenFields "item" "Jenkins Answers").pat.value }}
+
+# answers-tableau
+export TABLEAU_PAT_NAME={{- (bitwardenFields "item" "Tableau EMEA").pat_name.value }}
+export TABLEAU_PAT={{- (bitwardenFields "item" "Tableau EMEA").pat.value }}
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}

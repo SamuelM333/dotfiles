@@ -1,0 +1,61 @@
+{
+  "mcpServers": {
+    "mcp-atlassian.nike": {
+      "headers": {},
+      "type": "streamable-http",
+      "url": "https://mcp-atlassian.nike.com/mcp"
+    },
+    "agent-nike-dev": {
+      "headers": {},
+      "type": "streamable-http",
+      "url": "https://agent-nike-dev.nike.com/mcp"
+    },
+    "nike-dev-integration-system-mcp": {
+      "type": "http",
+      "url": "http://localhost:8000/mcp"
+    },
+    "databricks-blazer-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--index-url=https://artifactory.nike.com/artifactory/api/pypi/python-virtual/simple",
+        "databricks-mcp-server@1.0.1"
+      ],
+      "env": {
+        "DATABRICKS_HOST": "https://nike-sole-blazer.cloud.databricks.com"
+      }
+    }{{- if .databricks.react_enabled }},
+    "databricks-react-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--index-url=https://artifactory.nike.com/artifactory/api/pypi/python-virtual/simple",
+        "databricks-mcp-server@1.0.1"
+      ],
+      "env": {
+        "DATABRICKS_HOST": "https://nike-sole-react.cloud.databricks.com"
+      }
+    }{{- end }},
+    "markitdown-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "markitdown-mcp@0.0.1a4"
+      ],
+      "env": {}
+    },
+    "securecode-mcp-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--index-url",
+        "https://artifactory.nike.com/artifactory/api/pypi/python-virtual/simple/",
+        "securecode-mcp@1.1.0"
+      ],
+      "env": {
+        "SECURECODE_CLIENT_ID": "{{ .securecode.client_id }}",
+        "SECURECODE_CLIENT_SECRET": "{{ .securecode.client_secret }}"
+      }
+    }
+  }
+}

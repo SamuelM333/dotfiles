@@ -2,3 +2,14 @@
     type = "git-repo"
     url = "https://github.com/0xhckr/ghostty-shaders.git"
     refreshPeriod = "168h" # 7 days
+# Fedora's ghostty package ships without bundled themes (licensing, see
+# mbadolato/iTerm2-Color-Schemes#638), so fetch the ones the config uses.
+[".config/ghostty/themes/Adwaita"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/Adwaita"
+    refreshPeriod = "168h" # 7 days
+
+[".config/ghostty/themes/Adwaita Dark"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/Adwaita%20Dark"
+    refreshPeriod = "168h" # 7 days

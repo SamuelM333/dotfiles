@@ -115,6 +115,9 @@ alias -g NUL='>/dev/null 2>&1'
 # Pipe to jq
 alias -g J='| jq'
 
+# Global justfile
+alias j='just -g'
+
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"

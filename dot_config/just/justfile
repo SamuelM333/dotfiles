@@ -77,6 +77,10 @@ claude-rc *args:
 rgb-off:
     {{ justfile_directory() }}/scripts/rgb-off.sh
 
+# Turn on all RGB as static Razer green: OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed
+rgb-on:
+    {{ justfile_directory() }}/scripts/rgb-on.sh
+
 # Performance power mode + fixed fan speed, same as the ScopeBuddy pre-hook
 fan-game rpm="5000" ac="ac":
     razer-cli write power {{ ac }} 1

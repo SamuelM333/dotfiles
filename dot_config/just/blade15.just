@@ -2,7 +2,7 @@
 rgb-off:
     {{ justfile_directory() }}/scripts/rgb-off.sh
 
-# Turn on all RGB as static Razer green: OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed
+# Turn on all RGB as static green (#00FF00): OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed
 rgb-on:
     {{ justfile_directory() }}/scripts/rgb-on.sh
 

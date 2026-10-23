@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Turn on all RGB as static Razer green (#44D62C): OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed.
+# Turn on all RGB as static green (#00FF00): OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed.
 # polychromatic-cli is deprecated, talk to the OpenRazer daemon directly:
 # https://docs.polychromatic.app/faqs/#why-is-the-cli-deprecated
 
-R=68 G=214 B=44
+R=0 G=255 B=0
 
 echo "==> Turning on OpenRazer devices..."
 for serial in $(busctl --user call org.razer /org/razer razer.devices getDevices 2>/dev/null | grep -o '"[^"]*"' | tr -d '"'); do
@@ -29,10 +29,10 @@ fi
 
 if command -v openrgb &> /dev/null; then
     echo "==> Turning on OpenRGB devices..."
-    openrgb --mode static --color 44D62C || true
+    openrgb --mode static --color 00FF00 || true
 elif flatpak info org.openrgb.OpenRGB &> /dev/null; then
     echo "==> Turning on OpenRGB devices..."
-    flatpak run org.openrgb.OpenRGB --mode static --color 44D62C || true
+    flatpak run org.openrgb.OpenRGB --mode static --color 00FF00 || true
 fi
 
 echo "==> RGB on!"

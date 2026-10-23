@@ -1,0 +1,63 @@
+# Global justfile, run with `just -g <recipe>` from anywhere.
+
+set shell := ["bash", "-uc"]
+
+default:
+    @just -g --list
+
+# Claude Code remote control; each claude.ai/code session gets its own git worktree
+[group('claude')]
+[no-cd]
+claude-rc *args:
+    claude remote-control --spawn worktree {{ args }}
+
+# Turn off all RGB: OpenRazer (D-Bus), razer-laptop-control, OpenRGB if installed
+[group('rgb')]
+rgb-off:
+    #!/usr/bin/env bash
+    # OpenRazer: call every set*None and set*Brightness(0) each device exposes.
+    # polychromatic-cli is deprecated, see https://docs.polychromatic.app/faqs/#why-is-the-cli-deprecated
+    for serial in $(busctl --user call org.razer /org/razer razer.devices getDevices 2>/dev/null | grep -o '"[^"]*"' | tr -d '"'); do
+        path="/org/razer/device/$serial"
+        busctl --user introspect org.razer "$path" | awk '/ interface /{i=$1} /^\.set[A-Za-z]*(None|Brightness) /{print i, substr($1, 2)}' |
+        while read -r iface method; do
+            case "$method" in
+                *None) busctl --user call org.razer "$path" "$iface" "$method" ;;
+                *Brightness) busctl --user call org.razer "$path" "$iface" "$method" d 0 ;;
+            esac
+        done
+    done
+
+    # Razer laptop keyboard and logo (razer-laptop-control)
+    if command -v razer-cli >/dev/null; then
+        for ac in ac bat; do
+            razer-cli write brightness "$ac" 0 >/dev/null || true
+            razer-cli write logo "$ac" 0 >/dev/null || true
+        done
+    fi
+
+    # OpenRGB (native or flatpak)
+    if command -v openrgb >/dev/null; then
+        openrgb --mode off || openrgb --color 000000 || true
+    elif flatpak info org.openrgb.OpenRGB >/dev/null 2>&1; then
+        flatpak run org.openrgb.OpenRGB --mode off || flatpak run org.openrgb.OpenRGB --color 000000 || true
+    fi
+
+# Fixed fan speed + performance power mode, same as the ScopeBuddy pre-hook
+[group('fan')]
+fan-game rpm="5000" ac="ac":
+    razer-cli write power {{ ac }} 1
+    razer-cli write fan {{ ac }} {{ rpm }}
+
+# Back to auto fan and balanced power, same as the ScopeBuddy post-hook
+[group('fan')]
+fan-auto ac="ac":
+    razer-cli write power {{ ac }} 0
+    razer-cli write fan {{ ac }} 0
+
+# Show current fan setting and actual RPM
+[group('fan')]
+fan-status ac="ac":
+    razer-cli read fan {{ ac }}
+    razer-cli read fan-rpm
+    razer-cli read power {{ ac }}

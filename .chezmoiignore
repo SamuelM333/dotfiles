@@ -9,6 +9,12 @@ Library
 
 {{- if ne .chezmoi.hostname "blade15" }}
 .config/scopebuddy
+.config/just/blade15.just
+.config/just/scripts
+{{- end }}
+
+{{- if ne .chezmoi.os "linux" }}
+.config/just/claude.just
 {{- end }}
 
 {{- if ne .pretty_hostname "nike-mac" }}

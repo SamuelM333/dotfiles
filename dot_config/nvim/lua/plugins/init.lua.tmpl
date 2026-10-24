@@ -58,7 +58,9 @@ return {
     end,
     config = function(_, opts)
       require("nvim-treesitter").setup(opts)
-      vim.schedule(require("configs.treesitter").install_optional)
+      vim.schedule(function()
+        require("configs.treesitter").install_optional { quiet = true }
+      end)
     end,
   },
 
@@ -210,6 +212,7 @@ return {
       "ravitemer/mcphub.nvim",
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
+      { "ColinKennedy/mega.cmdparse", dependencies = { "ColinKennedy/mega.logging" } },
       --- The below dependencies are optional,
       "nvim-mini/mini.pick", -- for file_selector provider mini.pick
       "nvim-telescope/telescope.nvim", -- for file_selector provider telescope

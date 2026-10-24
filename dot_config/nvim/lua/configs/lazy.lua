@@ -1,6 +1,8 @@
 return {
   defaults = { lazy = true },
   install = { colorscheme = { "nvchad" } },
+  -- No plugin needs luarocks (avante's rock deps are listed as plugins instead).
+  rocks = { enabled = false },
 
   ui = {
     icons = {

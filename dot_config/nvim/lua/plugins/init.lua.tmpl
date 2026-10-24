@@ -5,12 +5,36 @@ return {
     opts = {},
     config = function()
       require("theme-sync").setup({
+        -- Brew's gsettings lacks the dconf backend and always reports 'default',
+        -- so ask the XDG desktop portal (1 = prefer dark, 2 = prefer light).
+        detect = function()
+          local out = vim.fn.system {
+            "gdbus", "call", "--session",
+            "--dest", "org.freedesktop.portal.Desktop",
+            "--object-path", "/org/freedesktop/portal/desktop",
+            "--method", "org.freedesktop.portal.Settings.ReadOne",
+            "org.freedesktop.appearance", "color-scheme",
+          }
+          if vim.v.shell_error ~= 0 then
+            return nil
+          end
+          local value = out:match "uint32 (%d)"
+          return value == "1" and "dark" or value == "2" and "light" or nil
+        end,
         on_change = function(mode)
           require("nvconfig").base46.theme = mode == "dark" and "onedark" or "one_light"
           require("base46").load_all_highlights()
         end,
       })
     end,
+  },
+
+  -- LuaSnip's submodules only feed the optional jsregexp build, which we don't run.
+  -- Recursing into them broke a lazy update when upstream reshuffled them, leaving
+  -- a half-checked-out tree that lazy then reports as "local changes".
+  {
+    "L3MON4D3/LuaSnip",
+    submodules = false,
   },
 
   {
@@ -90,11 +114,11 @@ return {
   -- Avante AI
   {
     "yetone/avante.nvim",
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    -- `make` now always compiles with cargo; build.sh downloads the prebuilt release.
     -- ⚠️ must add this setting! ! !
     build = vim.fn.has("win32") ~= 0
         and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-        or "make",
+        or "bash build.sh",
     event = "VeryLazy",
     version = false, -- Never set this value to "*"! Never!
     ---@module 'avante'

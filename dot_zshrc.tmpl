@@ -164,9 +164,6 @@ alias spotify_clean_cache="find ~/.var/app/com.spotify.Client/cache/spotify/ -na
 # Homelab
 export NOMAD_ADDR=http://192.168.0.4:4646
 export VAULT_ADDR=http://192.168.0.4:8200
-# nix-builder container (nix repo, docs/runbook.md)
-alias nb='podman exec -it -u samuel -w "$HOME/$(realpath --relative-to="$(realpath ~)" .)" nix-builder'
-alias nrb='nb nix run nixpkgs#nixos-rebuild -- --accept-flake-config'
 
 # Secrets
 export PROTON_PASS_KEY_PROVIDER=fs

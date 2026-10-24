@@ -22,3 +22,6 @@ Library
 .config/nvim/lua/configs/avante_skills.lua
 .config/nvim/lua/configs/avante_slash_commands.lua
 {{- end }}
+{{- if ne .chezmoi.os "linux" }}
+.gitconfig
+{{- end }}

@@ -1,5 +1,9 @@
+# Host-specific recipes, only installed where they apply (see .chezmoiignore)
+import? 'claude.just'
+import? 'blade15.just'
+
 default:
-    @just --list
+    @just -g --list
 
 # Generate shell completions for CLI tools
 generate-completions:

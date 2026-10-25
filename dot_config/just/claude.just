@@ -1,5 +1,5 @@
 # Claude Code remote control in the current directory, each session in its own git worktree.
-# Runs scripts/claude-rc-{pre,post}.sh around it when the host has them (blade15: RGB off, fan up).
+# Runs scripts/claude-rc-{pre,post}.sh around it when the host has them (blade15: RGB off, balanced power + auto fan, caffeine on).
 [no-cd]
 claude-rc *args:
     #!/usr/bin/env bash

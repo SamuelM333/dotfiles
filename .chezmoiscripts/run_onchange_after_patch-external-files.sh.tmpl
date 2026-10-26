@@ -8,10 +8,14 @@ PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff
 
 # Check if the target file exists before trying to patch
 if [ -f "$TARGET_FILE" ]; then
-    # -N (--forward): Ignores patches that appear to be already applied
-    # || true: Prevents the script from failing and halting 'chezmoi apply' if the patch was skipped
-    # TODO: --silent not working. Outout:
-    #   Ignoring previously applied (or reversed) patch.
-    #   2 out of 2 hunks ignored--saving rejects to '/Users/smuri5/.config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl.rej'
-    patch -N --silent "$TARGET_FILE" < "$PATCH_FILE" || true
+    # Probe with --dry-run first: it writes nothing, so no .rej files and no
+    # "previously applied" noise. A patch that reverses cleanly is already applied.
+    if patch -R -f -s --dry-run "$TARGET_FILE" < "$PATCH_FILE" > /dev/null 2>&1; then
+        :
+    elif patch -f -s --dry-run "$TARGET_FILE" < "$PATCH_FILE" > /dev/null 2>&1; then
+        patch -f -s "$TARGET_FILE" < "$PATCH_FILE"
+    else
+        # Upstream changed the file; warn without halting 'chezmoi apply'
+        echo "warning: $PATCH_FILE no longer applies to $TARGET_FILE" >&2
+    fi
 fi

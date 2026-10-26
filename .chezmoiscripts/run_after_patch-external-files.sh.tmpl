@@ -1,21 +1,20 @@
 #!/bin/bash
 
-SHADER_REPO={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders" | quote }}
-FLAT_SHADER={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/retro-terminal-flat.glsl" | quote }}
+TARGET_FILE={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl" | quote }}
 PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
-RETRO_INCLUDE={{ joinPath .chezmoi.homeDir ".config/ghostty/retro.ghostty" | quote }}
 
-# Build the flat CRT shader as a separate file, so the external repo stays clean
-# and `ghostty-retro` can switch between both versions.
-if [ -d "$SHADER_REPO/.git" ]; then
-    original=$(mktemp)
-    git -C "$SHADER_REPO" show HEAD:retro-terminal.glsl > "$original" &&
-        patch --silent -o "$FLAT_SHADER" "$original" < "$PATCH_FILE" ||
-        echo "warning: could not build $FLAT_SHADER" >&2
-    rm -f "$original"
+# Check if the target file exists before trying to patch
+if [ -f "$TARGET_FILE" ]; then
+    # -N (--forward): Ignores patches that appear to be already applied
+    # || true: Prevents the script from failing and halting 'chezmoi apply' if the patch was skipped
+    # TODO: --silent not working. Outout:
+    #   Ignoring previously applied (or reversed) patch.
+    #   2 out of 2 hunks ignored--saving rejects to '/Users/smuri5/.config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl.rej'
+    patch -N --silent "$TARGET_FILE" < "$PATCH_FILE" || true
 fi
 
 # ghostty_retro_terminal sets the starting state; `ghostty-retro` owns it after that
+RETRO_INCLUDE={{ joinPath .chezmoi.homeDir ".config/ghostty/retro.ghostty" | quote }}
 if [ ! -f "$RETRO_INCLUDE" ]; then
     {{ joinPath .chezmoi.homeDir ".local/bin/ghostty-retro" | quote }} {{ if .ghostty_retro_terminal }}on{{ else }}off{{ end }} > /dev/null
 fi

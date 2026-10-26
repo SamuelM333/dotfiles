@@ -8,6 +8,10 @@ return {
         -- Brew's gsettings lacks the dconf backend and always reports 'default',
         -- so ask the XDG desktop portal (1 = prefer dark, 2 = prefer light).
         detect = function()
+          -- No gdbus (e.g. macOS): nil falls back to the plugin's built-in detection.
+          if vim.fn.executable "gdbus" == 0 then
+            return nil
+          end
           local out = vim.fn.system {
             "gdbus", "call", "--session",
             "--dest", "org.freedesktop.portal.Desktop",

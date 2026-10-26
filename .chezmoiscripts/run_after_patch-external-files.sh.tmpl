@@ -12,9 +12,3 @@ if [ -f "$TARGET_FILE" ]; then
     #   2 out of 2 hunks ignored--saving rejects to '/Users/smuri5/.config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl.rej'
     patch -N --silent "$TARGET_FILE" < "$PATCH_FILE" || true
 fi
-
-# ghostty_retro_terminal sets the starting state; `ghostty-retro` owns it after that
-RETRO_INCLUDE={{ joinPath .chezmoi.homeDir ".config/ghostty/retro.ghostty" | quote }}
-if [ ! -f "$RETRO_INCLUDE" ]; then
-    {{ joinPath .chezmoi.homeDir ".local/bin/ghostty-retro" | quote }} {{ if .ghostty_retro_terminal }}on{{ else }}off{{ end }} > /dev/null
-fi

@@ -19,6 +19,16 @@ export NVM_LAZY_LOAD=true
 export NVM_AUTO_USE=true
 zinit light lukechilds/zsh-nvm
 
+# Tell Oh My Posh whether ghostty's retro look is on (see ghostty-retro).
+# Hooked before Oh My Posh, so the prompt sees the state of this precmd.
+_ghostty_retro_precmd() {
+  local state file=~/.config/ghostty/retro.ghostty
+  [[ $TERM_PROGRAM == ghostty && -r $file ]] && read -r state < $file
+  export GHOSTTY_RETRO=${state#\# ghostty-retro: }
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _ghostty_retro_precmd
+
 # Load Oh My Posh
 eval "$(oh-my-posh init zsh --config '~/.config/oh-my-posh/ys-lambda.omp.json')"
 

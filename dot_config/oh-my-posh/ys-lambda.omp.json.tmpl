@@ -7,6 +7,17 @@
     "auto": false,
     "notice": false
   },
+  "palettes": {
+    "template": "{{ if eq .Env.GHOSTTY_RETRO \"on\" }}retro{{ else }}default{{ end }}",
+    "list": {
+      "default": {
+        "user-host": "#D75F00"
+      },
+      "retro": {
+        "user-host": "darkGray"
+      }
+    }
+  },
   "blocks": [
     {
       "type": "prompt",
@@ -40,15 +51,15 @@
           "style": "plain"
         },
         {
-          "template": "<#D75F00>{{ .UserName }}</> <darkGray>@</> ",
+          "template": "<p:user-host>{{ .UserName }}</> <darkGray>@</> ",
           "type": "session",
           "style": "plain"
         },
         {
           "type": "text",
           "style": "plain",
-          "foreground": "#D75F00",
-          "template": "<#D75F00>[[[- or .pretty_hostname .chezmoi.hostname -]]]</> "
+          "foreground": "p:user-host",
+          "template": "<p:user-host>[[[- or .pretty_hostname .chezmoi.hostname -]]]</> "
         },
         {
           "options": {

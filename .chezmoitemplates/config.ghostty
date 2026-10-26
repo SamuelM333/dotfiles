@@ -13,5 +13,4 @@ theme = light:Adwaita,dark:Adwaita Dark
 config-file = ?retro.ghostty
 # Ghostty can't run commands, so type it into the shell: ^U clears the line,
 # the leading space keeps it out of history (hist_ignore_space)
-keybind = ctrl+shift+s=text:\x15 ghostty-retro toggle\n
 command-palette-entry = title:"Toggle Retro Terminal",description:"Turn the retro theme and CRT shaders on or off (runs ghostty-retro in the shell).",action:"text:\x15 ghostty-retro toggle\n"

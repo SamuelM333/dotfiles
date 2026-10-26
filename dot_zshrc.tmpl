@@ -55,10 +55,10 @@ zle -N edit-command-line
 bindkey '^X^E' edit-command-line
 bindkey ' ' magic-space
 
-# Switch the ghostty CRT shader between flat and curved, then reload ghostty
-ghostty-crt-widget() { zle -M "$(~/.local/bin/ghostty-crt)" }
-zle -N ghostty-crt-widget
-bindkey '^X^S' ghostty-crt-widget
+# Turn ghostty's retro look on or off, then reload ghostty
+ghostty-retro-widget() { zle -M "$(~/.local/bin/ghostty-retro)" }
+zle -N ghostty-retro-widget
+bindkey '^X^S' ghostty-retro-widget
 
 bindkey -s '^Xgc' 'git commit -m ""\C-b'
 bindkey -s '^Xgcn' 'git commit --no-verify -m ""\C-b'

@@ -13,6 +13,8 @@ font-size = {{ .ghostty_font_size -}}
 theme = light:Xcode Light hc,dark:Xcode Dark hc
 # Shader list, written by `ghostty-crt` (^X^S in zsh) to switch flat/curved CRT
 config-file = ?shaders.ghostty
+# Ghostty can't run commands, so send ^X^S to zsh's ghostty-crt widget
+keybind = ctrl+shift+s=text:\x18\x13
 {{ else }}
 theme = light:Adwaita,dark:Adwaita Dark
 {{ end -}}

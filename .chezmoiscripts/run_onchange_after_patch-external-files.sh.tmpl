@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Runs when this script changes; the hash re-runs it when the patch changes
+# patches/retro-terminal-flat.glsl.diff hash: {{ include "patches/retro-terminal-flat.glsl.diff" | sha256sum }}
+
 TARGET_FILE={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl" | quote }}
 PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
 

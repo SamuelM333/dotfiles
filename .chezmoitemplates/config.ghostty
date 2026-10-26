@@ -11,9 +11,8 @@ font-size = {{ .ghostty_font_size -}}
 
 {{ if .ghostty_retro_terminal }}
 theme = light:Xcode Light hc,dark:Xcode Dark hc
-custom-shader = ./shaders/ghostty-shaders/retro-terminal.glsl
-custom-shader = ./shaders/ghostty-shaders/tft.glsl
-custom-shader = ./shaders/ghostty-shaders/bloom.glsl
+# Shader list, written by `ghostty-crt` (^X^S in zsh) to switch flat/curved CRT
+config-file = ?shaders.ghostty
 {{ else }}
 theme = light:Adwaita,dark:Adwaita Dark
 {{ end -}}

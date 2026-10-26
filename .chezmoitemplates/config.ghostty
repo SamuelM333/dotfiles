@@ -11,3 +11,6 @@ font-size = {{ .ghostty_font_size }}
 theme = light:Adwaita,dark:Adwaita Dark
 # Retro look (theme and CRT shaders), switched at runtime with `ghostty-retro`
 config-file = ?retro.ghostty
+# Ghostty can't run commands, so type it into the shell: ^U clears the line,
+# the leading space keeps it out of history (hist_ignore_space)
+keybind = ctrl+shift+s=text:\x15 ~/.local/bin/ghostty-retro toggle\n

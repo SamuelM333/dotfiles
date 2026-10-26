@@ -1,0 +1,54 @@
+#!/bin/sh
+# Switch ghostty's retro terminal look (theme and CRT shaders) at runtime,
+# then reload every running ghostty.
+# Usage: ghostty-retro [toggle|on|off|flat|curved|status]   (default: toggle)
+#   toggle, on, off  turn the retro look on or off
+#   flat, curved     turn it on, with a flat or curved CRT
+
+# Ghostty reads this file through `config-file`; chezmoi doesn't manage it
+INCLUDE="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/retro.ghostty"
+
+# The include's first line holds the state: "# ghostty-retro: <on|off> <flat|curved>"
+state=$(sed -n '1s/^# ghostty-retro: //p' "$INCLUDE" 2>/dev/null)
+power=${state% *}
+shape=${state#* }
+[ "$power" = on ] || power=off
+[ "$shape" = curved ] || shape=flat
+
+case "${1:-toggle}" in
+    toggle) if [ "$power" = on ]; then power=off; else power=on; fi ;;
+    on | off) power=$1 ;;
+    flat | curved) power=on shape=$1 ;;
+    status)
+        echo "ghostty retro: $power ($shape)"
+        exit 0
+        ;;
+    *)
+        echo "usage: ghostty-retro [toggle|on|off|flat|curved|status]" >&2
+        exit 2
+        ;;
+esac
+
+if [ "$shape" = flat ]; then
+    # Built by chezmoi's run_after script from patches/retro-terminal-flat.glsl.diff
+    retro=./shaders/retro-terminal-flat.glsl
+else
+    retro=./shaders/ghostty-shaders/retro-terminal.glsl
+fi
+
+{
+    echo "# ghostty-retro: $power $shape"
+    echo "# Written by ghostty-retro. Run it again to switch; don't edit by hand."
+    if [ "$power" = on ]; then
+        cat <<EOF
+theme = light:Xcode Light hc,dark:Xcode Dark hc
+custom-shader = $retro
+custom-shader = ./shaders/ghostty-shaders/tft.glsl
+custom-shader = ./shaders/ghostty-shaders/bloom.glsl
+EOF
+    fi
+} > "$INCLUDE"
+
+# SIGUSR2 makes ghostty reload its config
+pkill -USR2 -x ghostty 2>/dev/null
+echo "ghostty retro: $power ($shape)"

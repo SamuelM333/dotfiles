@@ -3,10 +3,10 @@
 SHADER_REPO={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders" | quote }}
 FLAT_SHADER={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/retro-terminal-flat.glsl" | quote }}
 PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
-SHADER_INCLUDE={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders.ghostty" | quote }}
+RETRO_INCLUDE={{ joinPath .chezmoi.homeDir ".config/ghostty/retro.ghostty" | quote }}
 
 # Build the flat CRT shader as a separate file, so the external repo stays clean
-# and `ghostty-crt` can switch between both versions.
+# and `ghostty-retro` can switch between both versions.
 if [ -d "$SHADER_REPO/.git" ]; then
     original=$(mktemp)
     git -C "$SHADER_REPO" show HEAD:retro-terminal.glsl > "$original" &&
@@ -15,7 +15,7 @@ if [ -d "$SHADER_REPO/.git" ]; then
     rm -f "$original"
 fi
 
-# Start with the flat shader; `ghostty-crt` rewrites the include after that
-if [ ! -f "$SHADER_INCLUDE" ]; then
-    {{ joinPath .chezmoi.homeDir ".local/bin/ghostty-crt" | quote }} flat > /dev/null
+# ghostty_retro_terminal sets the starting state; `ghostty-retro` owns it after that
+if [ ! -f "$RETRO_INCLUDE" ]; then
+    {{ joinPath .chezmoi.homeDir ".local/bin/ghostty-retro" | quote }} {{ if .ghostty_retro_terminal }}on{{ else }}off{{ end }} > /dev/null
 fi

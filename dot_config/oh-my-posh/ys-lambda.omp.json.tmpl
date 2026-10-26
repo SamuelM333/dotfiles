@@ -64,7 +64,7 @@
           "options": {
             "fetch_status": true
           },
-          "template": "<darkGray>on</> <white>git:</><cyan>{{ .HEAD }}</>{{ if .Working.Changed }}<red> x</>{{ end }} ",
+          "template": "<darkGray>on</> <white>git:</><cyan>{{ .HEAD }}</>{{ if not .Detached }} <darkGray>at</> <cyan>{{ .ShortHash }}</>{{ end }}{{ if .Working.Changed }}<red> x</>{{ end }} ",
           "type": "git",
           "style": "plain"
         },

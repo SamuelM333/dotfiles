@@ -13,3 +13,21 @@
     type = "file"
     url = "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/Adwaita%20Dark"
     refreshPeriod = "168h" # 7 days
+
+# Agent skills, shared by every coding agent through ~/.agents/skills
+# (dot_claude/skills links them into Claude Code).
+{{- $skills := dict
+      "JuliusBrussee/caveman" (list "caveman" "caveman-commit" "caveman-compress" "caveman-explore" "caveman-help" "caveman-learn" "caveman-optimize" "caveman-review")
+      "vercel-labs/skills" (list "find-skills") }}
+{{- range $repo, $names := $skills }}
+{{-   range $names }}
+
+[".agents/skills/{{ . }}"]
+    type = "archive"
+    url = "https://github.com/{{ $repo }}/archive/HEAD.tar.gz"
+    stripComponents = 3
+    include = ["*/skills/{{ . }}/**"]
+    exact = true
+    refreshPeriod = "168h" # 7 days
+{{-   end }}
+{{- end }}

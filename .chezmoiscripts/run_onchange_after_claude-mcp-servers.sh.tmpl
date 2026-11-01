@@ -1,0 +1,50 @@
+#!/bin/bash
+# Register Claude Code's user-scope MCP servers. They live in ~/.claude.json,
+# which is mostly runtime state, so the claude CLI writes them instead of chezmoi.
+# Runs again whenever a server definition below changes. A server removed here
+# stays registered: remove it by hand with `claude mcp remove -s user <name>`.
+{{- $servers := dict
+      "caveman" (dict "type" "stdio" "command" (joinPath .chezmoi.homeDir ".caveman/bin/caveman-mcp") "args" (list) "env" (dict))
+      "notion" (dict "type" "http" "url" "https://mcp.notion.com/mcp")
+      "terraform" (dict "type" "stdio" "command" "docker" "args" (list "run" "-i" "--rm" "hashicorp/terraform-mcp-server") "env" (dict)) }}
+
+if ! command -v claude >/dev/null 2>&1; then
+    echo "claude not installed, skipping MCP servers" >&2
+    exit 0
+fi
+
+# Prints "same", "differs" or "missing" for server $1 with config $2.
+# Without python3, an existing server counts as "same".
+server_state() {
+    if ! command -v python3 >/dev/null 2>&1; then
+        claude mcp get "$1" >/dev/null 2>&1 && echo same || echo missing
+        return
+    fi
+    python3 -I - "$1" "$2" <<'EOF'
+import json, os, sys
+try:
+    with open(os.path.expanduser("~/.claude.json")) as f:
+        current = json.load(f).get("mcpServers", {})
+except (OSError, ValueError):
+    current = {}
+name, wanted = sys.argv[1], json.loads(sys.argv[2])
+if name not in current:
+    print("missing")
+else:
+    print("same" if current[name] == wanted else "differs")
+EOF
+}
+
+# Only touch servers that changed: `claude mcp remove` can drop a server's
+# saved OAuth login.
+add_server() {
+    case "$(server_state "$1" "$2")" in
+        same) return ;;
+        differs) claude mcp remove --scope user "$1" >/dev/null ;;
+    esac
+    claude mcp add-json --scope user "$1" "$2"
+}
+
+{{ range $name, $server := $servers -}}
+add_server {{ $name | quote }} {{ $server | toJson | squote }}
+{{ end -}}

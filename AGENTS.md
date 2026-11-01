@@ -11,7 +11,7 @@
 | [.chezmoidata/](.chezmoidata) | Static template data |
 | [.chezmoitemplates/](.chezmoitemplates) | Shared template fragments, pulled in with `{{ template "…" . }}` |
 | [.chezmoiexternal.toml.tmpl](.chezmoiexternal.toml.tmpl) | Files and repos chezmoi downloads (ghostty shaders and themes, agent skills into `~/.agents/skills`) |
-| [dot_claude/](dot_claude) | Claude Code user settings, and symlinks from `~/.claude/skills` to `~/.agents/skills`. User MCP servers are registered by [run_onchange_after_claude-mcp-servers.sh.tmpl](.chezmoiscripts/run_onchange_after_claude-mcp-servers.sh.tmpl) |
+| [dot_claude/](dot_claude) | Claude Code user settings, and symlinks from `~/.claude/skills` to `~/.agents/skills` |
 | [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply |
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [patches/](patches) | Diffs applied to external files by the `run_after` script |

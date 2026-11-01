@@ -1,0 +1,11 @@
+[Unit]
+Description=Re-apply rgb-on/rgb-off when a Razer device is plugged in
+After=openrazer-daemon.service
+
+[Service]
+ExecStart=%h/.config/just/scripts/rgb-watch.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.hostname "blade15" -}}
+#!/usr/bin/env bash
+# Enable (and restart on change) the user service that re-applies rgb-on/rgb-off on hotplug.
+# rgb-watch.service: {{ include "dot_config/systemd/user/rgb-watch.service" | sha256sum }}
+# rgb-watch.sh: {{ include "dot_config/just/scripts/executable_rgb-watch.sh" | sha256sum }}
+systemctl --user daemon-reload
+systemctl --user enable rgb-watch.service
+systemctl --user restart rgb-watch.service
+{{ end -}}

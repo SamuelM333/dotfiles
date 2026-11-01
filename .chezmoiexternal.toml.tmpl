@@ -16,18 +16,22 @@
 
 # Agent skills, shared by every coding agent through ~/.agents/skills
 # (dot_claude/skills links them into Claude Code).
-{{- $skills := dict
-      "JuliusBrussee/caveman" (list "caveman" "caveman-commit" "caveman-compress" "caveman-explore" "caveman-help" "caveman-learn" "caveman-optimize" "caveman-review")
-      "vercel-labs/skills" (list "find-skills") }}
-{{- range $repo, $names := $skills }}
-{{-   range $names }}
+# Pinned to a commit: skills are instructions and scripts agents run, so
+# review upstream changes before bumping a commit.
+{{- $skills := list
+      (dict "repo" "JuliusBrussee/caveman" "commit" "9b68f7ed12b05e7efaff18e65c5a3fc2849fd0a4"
+            "names" (list "caveman" "caveman-commit" "caveman-compress" "caveman-explore" "caveman-help" "caveman-learn" "caveman-optimize" "caveman-review"))
+      (dict "repo" "vercel-labs/skills" "commit" "92a9a34ac3bf88e695e468b90c7bf32f163d32c8"
+            "names" (list "find-skills")) }}
+{{- range $skills }}
+{{-   $src := . }}
+{{-   range .names }}
 
 [".agents/skills/{{ . }}"]
     type = "archive"
-    url = "https://github.com/{{ $repo }}/archive/HEAD.tar.gz"
+    url = "https://github.com/{{ $src.repo }}/archive/{{ $src.commit }}.tar.gz"
     stripComponents = 3
     include = ["*/skills/{{ . }}/**"]
     exact = true
-    refreshPeriod = "168h" # 7 days
 {{-   end }}
 {{- end }}

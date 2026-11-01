@@ -145,12 +145,17 @@ export NIKE_EMAIL="samuel.murillorodriguez@nike.com"
 
 # https://github.com/ankitpokhrel/jira-cli
 export JIRA_AUTH_TYPE=bearer
+export JIRA_API_TOKEN={{- (bitwardenFields "item" "045ef734-dc69-462d-a733-b11800b2eb76").jira_pat.value }}
 
 # https://github.com/nike-internal/uip.dev-integration-system
+export JIRA_PAT=$JIRA_API_TOKEN
+export CONFLUENCE_PAT={{- (bitwardenFields "item" "045ef734-dc69-462d-a733-b11800b2eb76").confluence_pat.value }}
 export ANSWERS_JENKINS_URL="https://answers.jenkins.bmx.nikecloud.com"
+export ANSWERS_JENKINS_PAT={{- (bitwardenFields "item" "Jenkins Answers").pat.value }}
 
-# Tokens (Jira, Confluence, Jenkins, Tableau) aren't exported here: a
-# project that needs one loads it from Bitwarden in its .envrc.
+# answers-tableau
+export TABLEAU_PAT_NAME={{- (bitwardenFields "item" "Tableau EMEA").pat_name.value }}
+export TABLEAU_PAT={{- (bitwardenFields "item" "Tableau EMEA").pat.value }}
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}

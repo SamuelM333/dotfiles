@@ -73,8 +73,9 @@ agent-state state:
     # Never fails, so a hook can't block the agent.
     state=$1
 
-    # Hooks get JSON on stdin; drain it so the agent isn't left writing to a pipe.
-    [[ -t 0 ]] || cat >/dev/null
+    # Hooks get JSON on stdin; read it all so the agent isn't left writing to a pipe.
+    input=
+    [[ -t 0 ]] || input=$(cat)
     command -v tmux >/dev/null 2>&1 || exit 0
 
     pane=${TMUX_PANE:-}
@@ -104,16 +105,24 @@ agent-state state:
     # window's tab gets highlighted (monitor-bell).
     printf '\a' >"$tty" 2>/dev/null
 
-    # When the agent finishes, send a desktop notification (OSC 777, wrapped for
-    # tmux passthrough, which needs allow-passthrough all), unless a focused
-    # client is already showing this window. Permission prompts are notified by
-    # the agent itself.
-    if [[ $state == done ]]; then
-      IFS=$'\t' read -r active where < <(tmux display-message -p -t "$pane" $'#{window_active}\t#{session_name}:#{window_name}' 2>/dev/null)
-      if [[ $active == 1 ]] && tmux list-clients -t "$pane" -F '#{client_flags}' 2>/dev/null | grep -q focused; then
-        exit 0
-      fi
-      where=${where//[;$'\a'$'\e']/}
-      printf '\ePtmux;\e\e]777;notify;Agent done;%s\a\e\\' "$where" >"$tty" 2>/dev/null
+    # Send a desktop notification (OSC 777, wrapped for tmux passthrough, which
+    # needs allow-passthrough all), unless a focused client is already showing
+    # this window. These are the only agent notifications: Claude Code's own
+    # channel is off, so its 60s idle reminder never reaches the desktop.
+    IFS=$'\t' read -r active where < <(tmux display-message -p -t "$pane" $'#{window_active}\t#{session_name}:#{window_name}' 2>/dev/null)
+    if [[ $active == 1 ]] && tmux list-clients -t "$pane" -F '#{client_flags}' 2>/dev/null | grep -q focused; then
+      exit 0
     fi
+    if [[ $state == done ]]; then
+      title="Agent done" body=$where
+    else
+      # The hook's message says what the agent needs ("Claude needs your permission to use Bash").
+      title="Agent needs you" body=
+      if [[ -n $input ]] && command -v jq >/dev/null 2>&1; then
+        body=$(jq -r '.message // empty' <<<"$input" 2>/dev/null)
+      fi
+      body="$where${body:+: $body}"
+    fi
+    body=${body//[;$'\a'$'\e']/}
+    printf '\ePtmux;\e\e]777;notify;%s;%s\a\e\\' "$title" "$body" >"$tty" 2>/dev/null
     exit 0

@@ -32,13 +32,7 @@ local node = find_node()
 local cli = find_mcp_hub_cli(node)
 
 ---@type mcphub.Config
-local config = {
-  extensions = {
-    avante = {
-      make_slash_commands = true,
-    },
-  },
-}
+local config = {}
 
 -- mcp-hub's bin wrapper uses `#!/usr/bin/env node`, which fails when GUI
 -- Neovim has no node on PATH. Invoke node + cli.js directly instead.

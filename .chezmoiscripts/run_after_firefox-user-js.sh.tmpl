@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Copy firefox/user.js into every Firefox profile listed in profiles.ini.
+# Profile folder names differ per machine, so chezmoi can't target them directly.
+
+SOURCE={{ joinPath .chezmoi.sourceDir "firefox/user.js" | quote }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+ROOTS=("$HOME/Library/Application Support/Firefox")
+{{- else -}}
+ROOTS=(
+    "$HOME/.mozilla/firefox"
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
+    "$HOME/snap/firefox/common/.mozilla/firefox"
+)
+{{- end }}
+
+for root in "${ROOTS[@]}"; do
+    [ -f "$root/profiles.ini" ] || continue
+    # Read Path= and IsRelative= per section; a profile ends at the next section.
+    awk -F= '
+        /^\[/ { if (path != "") print rel "\t" path; path = ""; rel = 1 }
+        $1 == "Path" { path = substr($0, 6) }
+        $1 == "IsRelative" { rel = $2 }
+        END { if (path != "") print rel "\t" path }
+    ' "$root/profiles.ini" | while IFS=$'\t' read -r rel path; do
+        if [ "$rel" = 1 ]; then dir="$root/$path"; else dir="$path"; fi
+        [ -d "$dir" ] || continue
+        cmp -s "$SOURCE" "$dir/user.js" || cp "$SOURCE" "$dir/user.js"
+    done
+done

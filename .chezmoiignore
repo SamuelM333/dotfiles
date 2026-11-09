@@ -1,6 +1,7 @@
 dot_zsh/completions/*
 AGENTS.md
 CLAUDE.md
+firefox
 
 {{- if ne .chezmoi.os "darwin" }}
 Library

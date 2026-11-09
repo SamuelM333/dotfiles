@@ -20,3 +20,18 @@ vim.api.nvim_create_autocmd("User", {
     end
   end,
 })
+
+-- Reopen a file at the line where it was last left. Commit and rebase buffers
+-- (Neogit, git commit) and xxd hex dumps still start at the top.
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function()
+    local line = vim.fn.line "'\""
+    if
+      line > 1
+      and line <= vim.fn.line "$"
+      and vim.fn.index({ "commit", "gitcommit", "gitrebase", "xxd" }, vim.bo.filetype) == -1
+    then
+      vim.cmd 'normal! g`"'
+    end
+  end,
+})

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Adds the tmux agent-status hooks to Claude Code's settings, and defaults
-# notifications to Ghostty's OSC 777 (inside tmux, the "auto" channel sees
-# TERM_PROGRAM=tmux and sends nothing). Also sets defaults for the theme,
-# notification toggles and plugins. Keeps everything else in the file as it is,
-# including values changed in /config. chezmoi passes the current file on
-# stdin and writes back what this prints.
+# Adds the tmux agent-status hooks to Claude Code's settings, and turns off
+# Claude Code's own notifications: the hooks send them instead (just -g
+# agent-state), without the 60s idle reminder. Also sets defaults for the
+# theme, notification toggles and plugins. Keeps everything else in the file as
+# it is, including values changed in /config (except the notification channel).
+# chezmoi passes the current file on stdin and writes back what this prints.
 
 input=$(cat)
 [[ -n $input ]] || input='{}'
@@ -30,7 +30,8 @@ jq --indent 2 '
   | addhook("Notification"; "waiting";
       "permission_prompt|elicitation_dialog|elicitation_url_dialog|worker_permission_prompt|agent_needs_input")
   | addhook("Stop"; "done"; "")
-  | .preferredNotifChannel //= "ghostty"
+  # Always off: any other channel would duplicate the notifications from the hooks.
+  | .preferredNotifChannel = "notifications_disabled"
   | .theme //= "auto"
   | .inputNeededNotifEnabled //= false
   | .agentPushNotifEnabled //= false

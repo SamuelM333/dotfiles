@@ -90,10 +90,24 @@ agent-state state:
       *) echo "usage: agent-state working|waiting|done|clear" >&2; exit 0 ;;
     esac
 
+    [[ $state == waiting || $state == done ]] || exit 0
+    tty=$(tmux display-message -p -t "$pane" '#{pane_tty}' 2>/dev/null)
+    [[ -n $tty ]] || exit 0
+
     # Ring the bell in the agent's pane when it needs attention, so a background
     # window's tab gets highlighted (monitor-bell).
-    if [[ $state == waiting || $state == done ]]; then
-      tty=$(tmux display-message -p -t "$pane" '#{pane_tty}' 2>/dev/null)
-      [[ -n $tty ]] && printf '\a' >"$tty" 2>/dev/null
+    printf '\a' >"$tty" 2>/dev/null
+
+    # When the agent finishes, send a desktop notification (OSC 777, wrapped for
+    # tmux passthrough, which needs allow-passthrough all), unless a focused
+    # client is already showing this window. Permission prompts are notified by
+    # the agent itself.
+    if [[ $state == done ]]; then
+      IFS=$'\t' read -r active where < <(tmux display-message -p -t "$pane" $'#{window_active}\t#{session_name}:#{window_name}' 2>/dev/null)
+      if [[ $active == 1 ]] && tmux list-clients -t "$pane" -F '#{client_flags}' 2>/dev/null | grep -q focused; then
+        exit 0
+      fi
+      where=${where//[;$'\a'$'\e']/}
+      printf '\ePtmux;\e\e]777;notify;Agent done;%s\a\e\\' "$where" >"$tty" 2>/dev/null
     fi
     exit 0

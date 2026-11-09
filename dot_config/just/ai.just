@@ -11,7 +11,13 @@ ai title="" color="":
     set -euo pipefail
     dir=$PWD
     title=${1:-}
-    [[ -n $title ]] || title=$(basename -- "$dir")
+    # The prefix + a prompt sets AI_NEW_WINDOW: a blank title there always opens a
+    # new window named after the dir, even if one with that name exists.
+    new_window=0
+    if [[ -z $title ]]; then
+      title=$(basename -- "$dir")
+      [[ -z ${AI_NEW_WINDOW:-} ]] || new_window=1
+    fi
     color=${2:-}
     agent={{ quote(ai_agent) }}
 
@@ -26,7 +32,7 @@ ai title="" color="":
     # doesn't create a duplicate. tmux turns tabs into "_" in -F output, so
     # split on the first space (window ids never contain one, titles may).
     win=""
-    if tmux has-session -t "=$session" 2>/dev/null; then
+    if ((!new_window)) && tmux has-session -t "=$session" 2>/dev/null; then
       win=$(tmux list-windows -t "=$session" -F '#{window_id} #{@ai_title}' |
         awk -v t="$title" '{ id = $1; sub(/^[^ ]+ /, ""); if ($0 == t) { print id; exit } }')
     fi

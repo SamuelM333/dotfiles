@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# tmux-agent-state working|waiting|done|clear
+#
+# Called from AI agent hooks. Marks the tmux window the agent runs in, so the
+# window list shows its state (see @agent_icon in ~/.config/tmux/tmux.conf).
+# Does nothing outside tmux. Always exits 0 so it never blocks the agent.
+
+state=${1:-}
+
+# Hooks get JSON on stdin; drain it so the agent isn't left writing to a pipe.
+[[ -t 0 ]] || cat >/dev/null
+
+command -v tmux >/dev/null 2>&1 || exit 0
+
+pane=${TMUX_PANE:-}
+if [[ -z $pane ]]; then
+  # Environment not inherited: find the pane whose shell is one of our ancestors.
+  panes=$(tmux list-panes -a -F '#{pane_pid} #{pane_id}' 2>/dev/null) || exit 0
+  pid=$$
+  while [[ -n $pid && $pid -gt 1 ]]; do
+    pane=$(awk -v p="$pid" '$1 == p { print $2; exit }' <<<"$panes")
+    [[ -n $pane ]] && break
+    pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+  done
+fi
+[[ -n $pane ]] || exit 0
+
+case $state in
+  working | waiting | done)
+    tmux set-option -w -t "$pane" @agent_state "$state" 2>/dev/null
+    ;;
+  clear)
+    tmux set-option -wu -t "$pane" @agent_state 2>/dev/null
+    ;;
+  *)
+    echo "usage: tmux-agent-state working|waiting|done|clear" >&2
+    exit 0
+    ;;
+esac
+
+# Ring the bell in the agent's pane when it needs attention, so a background
+# window's tab gets highlighted (monitor-bell).
+if [[ $state == waiting || $state == done ]]; then
+  tty=$(tmux display-message -p -t "$pane" '#{pane_tty}' 2>/dev/null)
+  [[ -n $tty ]] && printf '\a' >"$tty" 2>/dev/null
+fi
+exit 0

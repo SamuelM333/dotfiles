@@ -13,3 +13,17 @@
     type = "file"
     url = "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/Adwaita%20Dark"
     refreshPeriod = "168h" # 7 days
+
+# tmux plugins, loaded straight from tmux.conf (no TPM)
+[".config/tmux/plugins/vim-tmux-navigator"]
+    type = "git-repo"
+    url = "https://github.com/christoomey/vim-tmux-navigator.git"
+    refreshPeriod = "168h" # 7 days
+
+[".config/tmux/plugins/tmux-which-key"]
+    type = "git-repo"
+    url = "https://github.com/alexwforsythe/tmux-which-key.git"
+    refreshPeriod = "168h" # 7 days
+    # Its menu builder imports PyYAML from a submodule.
+    clone.args = ["--recurse-submodules"]
+    pull.args = ["--recurse-submodules"]

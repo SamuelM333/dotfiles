@@ -24,6 +24,13 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 - A file in the repo root that isn't a dotfile (like this one) must be listed in `.chezmoiignore`, or chezmoi copies it into `$HOME`.
 - `.envrc` (direnv) sets the git author and `GH_TOKEN` for the `SamuelM333` account. Run `gh` from inside the repo so it picks them up.
 
+## tmux and AI agents
+
+- [dot_config/tmux/tmux.conf](dot_config/tmux/tmux.conf) is the tmux config. Plugins are git repos cloned by chezmoi into `~/.config/tmux/plugins` (see `.chezmoiexternal.toml`) and loaded with `run-shell`; there is no TPM.
+- `ai TITLE [COLOR]` ([dot_bin/executable_ai.tmpl](dot_bin/executable_ai.tmpl)) opens or switches to a tmux window with Neovim and the agent side by side in `$PWD`. The agent comes from the template: `claude` on Linux, Cursor's `agent` on macOS. `prefix a` prompts for the same.
+- Window colors are the `@color` window option, drawn by `window-status-format`. Agent state is `@agent_state`, set by `tmux-agent-state` ([dot_bin/executable_tmux-agent-state](dot_bin/executable_tmux-agent-state)) from agent hooks. On Linux, [private_dot_claude/modify_settings.json](private_dot_claude/modify_settings.json) adds those hooks to `~/.claude/settings.json` without touching the rest of the file.
+- The cheatsheet is tmux-which-key on `prefix Space`; edit its menu in [dot_config/tmux/which-key.yaml](dot_config/tmux/which-key.yaml). C-h/j/k/l cross between Neovim and tmux panes through vim-tmux-navigator on both sides (NvChad plugin + mappings in `mappings.lua`).
+
 ## Public repo
 
 - **Nothing secret goes in a commit.** No tokens, keys, passwords, private hostnames/IPs or work-specific config. Pull secrets in at apply time from a password manager or environment variable through a template, or leave the file out with `.chezmoiignore`.

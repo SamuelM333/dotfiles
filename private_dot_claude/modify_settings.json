@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Adds the tmux agent-status hooks to Claude Code's settings, keeping
+# everything else in the file as it is. chezmoi passes the current file on
+# stdin and writes back what this prints.
+
+input=$(cat)
+[[ -n $input ]] || input='{}'
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s' "$input"
+  exit 0
+fi
+
+jq --indent 2 '
+  def addhook($event; $state):
+    ("$HOME/.bin/tmux-agent-state " + $state) as $cmd
+    | .hooks[$event] = ((.hooks[$event] // [])
+        | if any(.[]?.hooks[]?; .command == $cmd) then .
+          else . + [{hooks: [{type: "command", command: $cmd}]}] end);
+  addhook("UserPromptSubmit"; "working")
+  | addhook("Notification"; "waiting")
+  | addhook("Stop"; "done")
+' <<<"$input" || printf '%s' "$input"

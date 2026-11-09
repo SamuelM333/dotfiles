@@ -1,0 +1,153 @@
+# tmux-which-key menu: prefix + Space (the tmux equivalent of NvChad's <leader>ch).
+# Built into ~/.cache/tmux/which-key-init.tmux by tmux.conf on every load.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/alexwforsythe/tmux-which-key/main/config.schema.yaml
+command_alias_start_index: 200
+keybindings:
+  prefix_table: Space
+title:
+  style: align=centre,bold
+  prefix: tmux
+  prefix_style: fg=green,align=centre,bold
+position:
+  x: R
+  y: P
+custom_variables:
+  - name: log_info
+    value: '#[fg=green,italics] [info]#[default]#[italics]'
+macros:
+  - name: reload-config
+    commands:
+      - display "#{log_info} Loading config... "
+      - source-file $HOME/.config/tmux/tmux.conf
+      - display -p "\n\n... Press ENTER to continue"
+items:
+  - name: Run command
+    key: space
+    command: command-prompt
+  - name: Last window
+    key: tab
+    command: last-window
+  - name: Last pane
+    key: '`'
+    command: last-pane
+  - separator: true
+  - name: +AI
+    key: a
+    menu:
+      - name: New agent window (ai)
+        key: a
+        command: source-file $HOME/.config/tmux/ai-prompt.conf
+      - name: Set window color
+        key: c
+        command: command-prompt -p "color:" "set -w @color '%%'"
+      - name: Reset window color
+        key: C
+        command: set -wu @color
+      - name: Clear agent status
+        key: x
+        command: set -wu @agent_state
+  - name: +Windows
+    key: w
+    menu:
+      - name: Choose
+        key: w
+        command: choose-tree -Zw
+      - name: Last
+        key: tab
+        command: last-window
+      - name: Previous
+        key: p
+        command: previous-window
+        transient: true
+      - name: Next
+        key: n
+        command: next-window
+        transient: true
+      - name: New
+        key: c
+        command: 'neww -c #{pane_current_path}'
+      - separator: true
+      - name: Split right
+        key: /
+        command: 'splitw -h -c #{pane_current_path}'
+      - name: Split down
+        key: '-'
+        command: 'splitw -v -c #{pane_current_path}'
+      - name: Rotate
+        key: o
+        command: rotatew
+        transient: true
+      - separator: true
+      - name: Rename
+        key: R
+        command: command-prompt -p "Rename window:" -I "#W" "renamew -- \"%%\""
+      - name: Kill
+        key: X
+        command: 'confirm -p "Kill window #W? (y/n)" killw'
+  - name: +Panes
+    key: p
+    menu:
+      - name: Choose
+        key: p
+        command: displayp -d 0
+      - name: Last
+        key: tab
+        command: lastp
+      - separator: true
+      - name: Zoom
+        key: z
+        command: resizep -Z
+      - name: +Resize
+        key: r
+        menu:
+          - name: Left
+            key: h
+            command: resizep -L 5
+            transient: true
+          - name: Down
+            key: j
+            command: resizep -D 5
+            transient: true
+          - name: Up
+            key: k
+            command: resizep -U 5
+            transient: true
+          - name: Right
+            key: l
+            command: resizep -R 5
+            transient: true
+      - name: Swap left
+        key: H
+        command: swapp -t "{left-of}"
+      - name: Swap right
+        key: L
+        command: swapp -t "{right-of}"
+      - name: Break to window
+        key: '!'
+        command: break-pane
+      - separator: true
+      - name: Kill
+        key: X
+        command: 'confirm -p "Kill pane #P? (y/n)" killp'
+  - name: +Sessions
+    key: s
+    menu:
+      - name: Choose
+        key: s
+        command: choose-tree -Zs
+      - name: Rename
+        key: r
+        command: command-prompt -p "Rename session:" -I "#S" "rename-session -- \"%%\""
+      - name: Detach
+        key: d
+        command: detach
+  - name: Copy mode
+    key: c
+    command: copy-mode
+  - separator: true
+  - name: Reload config
+    key: r
+    macro: reload-config
+  - name: All keys
+    key: '?'
+    command: list-keys -N

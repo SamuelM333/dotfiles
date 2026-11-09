@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Adds the tmux agent-status hooks to Claude Code's settings, keeping
-# everything else in the file as it is. chezmoi passes the current file on
+# Adds the tmux agent-status hooks to Claude Code's settings, and defaults
+# notifications to Ghostty's OSC 777 (inside tmux, the "auto" channel sees
+# TERM_PROGRAM=tmux and sends nothing). Keeps everything else in the file as it
+# is, including a channel picked in /config. chezmoi passes the current file on
 # stdin and writes back what this prints.
 
 input=$(cat)
@@ -20,4 +22,5 @@ jq --indent 2 '
   addhook("UserPromptSubmit"; "working")
   | addhook("Notification"; "waiting")
   | addhook("Stop"; "done")
+  | .preferredNotifChannel //= "ghostty"
 ' <<<"$input" || printf '%s' "$input"

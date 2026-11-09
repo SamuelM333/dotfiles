@@ -13,7 +13,7 @@ fi
 
 jq --indent 2 '
   def addhook($event; $state):
-    ("$HOME/.bin/tmux-agent-state " + $state) as $cmd
+    ("just -g agent-state " + $state) as $cmd
     | .hooks[$event] = ((.hooks[$event] // [])
         | if any(.[]?.hooks[]?; .command == $cmd) then .
           else . + [{hooks: [{type: "command", command: $cmd}]}] end);

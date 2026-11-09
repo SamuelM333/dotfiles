@@ -27,8 +27,8 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 ## tmux and AI agents
 
 - [dot_config/tmux/tmux.conf](dot_config/tmux/tmux.conf) is the tmux config. Plugins are git repos cloned by chezmoi into `~/.config/tmux/plugins` (see `.chezmoiexternal.toml`) and loaded with `run-shell`; there is no TPM.
-- `ai TITLE [COLOR]` ([dot_bin/executable_ai.tmpl](dot_bin/executable_ai.tmpl)) opens or switches to a tmux window with Neovim and the agent side by side in `$PWD`. The agent comes from the template: `claude` on Linux, Cursor's `agent` on macOS. `prefix a` prompts for the same.
-- Window colors are the `@color` window option, drawn by `window-status-format`. Agent state is `@agent_state`, set by `tmux-agent-state` ([dot_bin/executable_tmux-agent-state](dot_bin/executable_tmux-agent-state)) from agent hooks. On Linux, [private_dot_claude/modify_settings.json](private_dot_claude/modify_settings.json) adds those hooks to `~/.claude/settings.json` without touching the rest of the file.
+- `ai TITLE [COLOR]` (zsh alias for `just -g ai`, recipe in [dot_config/just/ai.just](dot_config/just/ai.just)) opens or switches to a tmux window with Neovim and the agent side by side in `$PWD`. The agent is picked with just's `os()`: `claude` on Linux, Cursor's `agent` on macOS (`AI_AGENT` overrides). `prefix a` prompts for the same.
+- Window colors are the `@color` window option, drawn by `window-status-format`. Agent state is `@agent_state`, set by `just -g agent-state working|waiting|done|clear` from agent hooks. On Linux, [private_dot_claude/modify_settings.json](private_dot_claude/modify_settings.json) adds those hooks to `~/.claude/settings.json` without touching the rest of the file.
 - The cheatsheet is tmux-which-key on `prefix Space`; edit its menu in [dot_config/tmux/which-key.yaml](dot_config/tmux/which-key.yaml). C-h/j/k/l cross between Neovim and tmux panes through vim-tmux-navigator on both sides (NvChad plugin + mappings in `mappings.lua`).
 
 ## Public repo

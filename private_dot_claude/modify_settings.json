@@ -35,4 +35,6 @@ jq --indent 2 '
   | .inputNeededNotifEnabled //= false
   | .agentPushNotifEnabled //= false
   | .enabledPlugins["cc-plugin-you-should-know@builtin"] //= true
+  | .enabledPlugins["egm@egm"] //= true
+  | .extraKnownMarketplaces.egm //= {source: {source: "github", repo: "google/elephant-goldfish-model"}}
 ' <<<"$input" || printf '%s' "$input"

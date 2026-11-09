@@ -102,19 +102,6 @@ return {
     end,
   },
 
-  -- MCP Hub (MCP server management)
-  {
-    "ravitemer/mcphub.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    build = 'bash -lc "npm install -g mcp-hub@latest"',
-    cmd = "MCPHub",
-    config = function()
-      require("mcphub").setup(require "configs.mcphub")
-    end,
-  },
-
   -- Snacks input UI (also used by Neogit)
   {
     "folke/snacks.nvim",

@@ -3,17 +3,17 @@
 # Agent the launcher starts: Claude Code on the Linux hosts, Cursor's CLI on macOS.
 ai_agent := env("AI_AGENT", if os() == "macos" { "agent" } else { "claude" })
 
-# Open (or switch to) a tmux window TITLE with nvim + the agent in the current dir; COLOR colors its tab
+# Open (or switch to) a tmux window TITLE (default: current dir name) with nvim + the agent in the current dir; COLOR colors its tab
 [no-cd]
 [positional-arguments]
-ai title color="":
+ai title="" color="":
     #!/usr/bin/env bash
     set -euo pipefail
-    title=$1
+    dir=$PWD
+    title=${1:-}
+    [[ -n $title ]] || title=$(basename -- "$dir")
     color=${2:-}
     agent={{ quote(ai_agent) }}
-    dir=$PWD
-    [[ -n $title ]] || { echo "usage: ai TITLE [COLOR]" >&2; exit 2; }
 
     # Windows live in the current session, or in the "ai" session outside tmux.
     if [[ -n ${TMUX:-} ]]; then

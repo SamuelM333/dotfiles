@@ -14,8 +14,14 @@
     url = "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/Adwaita%20Dark"
     refreshPeriod = "168h" # 7 days
 
+# tmux plugins, loaded straight from tmux.conf (no TPM)
+[".config/tmux/plugins/vim-tmux-navigator"]
+    type = "git-repo"
+    url = "https://github.com/christoomey/vim-tmux-navigator.git"
+    refreshPeriod = "168h" # 7 days
+
 # Agent skills, shared by every coding agent through ~/.agents/skills
-# (dot_claude/skills links them into Claude Code).
+# (private_dot_claude/skills links them into Claude Code).
 # Pinned to a commit: skills are instructions and scripts agents run, so
 # review upstream changes before bumping a commit.
 {{- $skills := list

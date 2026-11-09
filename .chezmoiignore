@@ -16,15 +16,11 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}
+.claude
 .config/just/claude.just
 .config/environment.d
 {{- end }}
 
-{{- if ne .pretty_hostname "nike-mac" }}
-.config/nvim/lua/configs/avante_patches.lua
-.config/nvim/lua/configs/avante_skills.lua
-.config/nvim/lua/configs/avante_slash_commands.lua
-{{- end }}
 {{- if ne .chezmoi.os "linux" }}
 .gitconfig
 {{- end }}

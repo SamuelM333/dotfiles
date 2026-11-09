@@ -11,7 +11,7 @@
 | [.chezmoidata/](.chezmoidata) | Static template data |
 | [.chezmoitemplates/](.chezmoitemplates) | Shared template fragments, pulled in with `{{ template "…" . }}` |
 | [.chezmoiexternal.toml.tmpl](.chezmoiexternal.toml.tmpl) | Files and repos chezmoi downloads (ghostty shaders and themes, agent skills into `~/.agents/skills`) |
-| [dot_claude/](dot_claude) | Claude Code user settings, and symlinks from `~/.claude/skills` to `~/.agents/skills` |
+| [private_dot_claude/](private_dot_claude) | Claude Code (Linux only): `modify_settings.json` merges hooks and defaults into `~/.claude/settings.json`; `skills/` links `~/.claude/skills/<name>` to `~/.agents/skills/<name>` |
 | [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply |
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [patches/](patches) | Diffs applied to external files by the `run_after` script |
@@ -24,6 +24,13 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 - Render a template without applying it: `chezmoi execute-template < dot_zshrc.tmpl` or `chezmoi cat ~/.zshrc`.
 - A file in the repo root that isn't a dotfile (like this one) must be listed in `.chezmoiignore`, or chezmoi copies it into `$HOME`.
 - `.envrc` (direnv) sets the git author and `GH_TOKEN` for the `SamuelM333` account. Run `gh` from inside the repo so it picks them up.
+
+## tmux and AI agents
+
+- [dot_config/tmux/tmux.conf](dot_config/tmux/tmux.conf) is the tmux config. Plugins are git repos cloned by chezmoi into `~/.config/tmux/plugins` (see `.chezmoiexternal.toml.tmpl`) and loaded with `run-shell`; there is no TPM.
+- `ai [TITLE] [COLOR]` (zsh alias for `just -g ai`, recipe in [dot_config/just/ai.just](dot_config/just/ai.just)) opens or switches to a tmux window TITLE (default: the current directory's name) with Neovim and the agent side by side in `$PWD`. The agent is picked with just's `os()`: `claude` on Linux, Cursor's `agent` on macOS (`AI_AGENT` overrides). `prefix a` prompts for the same.
+- Window colors are the `@color` window option, drawn by `window-status-format`. Agent state is `@agent_state`, set by `just -g agent-state working|waiting|done|clear` from agent hooks; `waiting`/`done` ring the bell, and `done` also sends a desktop notification (OSC 777 through tmux passthrough, so `allow-passthrough all`) unless a focused client is showing that window. On Linux, [private_dot_claude/modify_settings.json](private_dot_claude/modify_settings.json) adds those hooks to `~/.claude/settings.json` without touching the rest of the file.
+- The cheatsheet on `prefix Space` is plain tmux `display-menu` (no plugin, no build step); edit its menus in [dot_config/tmux/which-key.conf](dot_config/tmux/which-key.conf), one `command-alias` per menu. C-h/j/k/l cross between Neovim and tmux panes through vim-tmux-navigator on both sides (NvChad plugin + mappings in `mappings.lua`).
 
 ## Public repo
 

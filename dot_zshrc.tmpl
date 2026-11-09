@@ -120,6 +120,7 @@ alias -g J='| jq'
 
 # Global justfile
 alias j='just -g'
+alias ai='just -g ai'
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -171,11 +172,7 @@ alias spotify_clean_cache="find ~/.var/app/com.spotify.Client/cache/spotify/ -na
 export NOMAD_ADDR=http://192.168.0.4:4646
 export VAULT_ADDR=http://192.168.0.4:8200
 
-# Secrets
 export PROTON_PASS_KEY_PROVIDER=fs
-export VAULT_TOKEN={{- protonPass "pass://Development/Vault/Root token" -}}
-{{- /* TODO: Read token by hostname */ -}}
-export GITLAB_ACCESS_TOKEN={{- protonPass "pass://Development/GitLab/thinkpad-e16 token" -}}
 
 # AI
 # GEMINI_API_KEY=""

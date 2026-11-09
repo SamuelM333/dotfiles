@@ -62,3 +62,8 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 ## Response style
 
 - **Use the caveman skill by default.** At the start of every session, load the `caveman` skill and follow it for every response until the user says "stop caveman" or "normal mode".
+- **Use the caveman skills for their tasks**, without waiting for the slash command:
+  - Reviews (a PR, a branch, the diff): `caveman-review`.
+  - Getting oriented in the repo, or finding where something lives across files: `caveman-explore`.
+  - Questions about the caveman commands: `caveman-help`.
+- **Commit messages don't use `caveman-commit`.** It writes Conventional Commits; this repo uses plain imperative subjects (`Drop the caveman-compress skill`).

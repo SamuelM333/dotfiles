@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Adds the tmux agent-status hooks to Claude Code's settings, and defaults
+# notifications to Ghostty's OSC 777 (inside tmux, the "auto" channel sees
+# TERM_PROGRAM=tmux and sends nothing). Keeps everything else in the file as it
+# is, including a channel picked in /config. chezmoi passes the current file on
+# stdin and writes back what this prints.
+
+input=$(cat)
+[[ -n $input ]] || input='{}'
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s' "$input"
+  exit 0
+fi
+
+# addhook drops any earlier copy of our hook (so a changed matcher replaces the
+# old entry) and appends it once; other hooks are left alone.
+jq --indent 2 '
+  def addhook($event; $state; $matcher):
+    ("just -g agent-state " + $state) as $cmd
+    | ({hooks: [{type: "command", command: $cmd}]}
+        + (if $matcher == "" then {} else {matcher: $matcher} end)) as $entry
+    | .hooks[$event] = ((.hooks[$event] // [])
+        | map((.hooks //= []) | .hooks |= map(select(.command != $cmd)) | select(.hooks != []))
+        | . + [$entry]);
+  addhook("UserPromptSubmit"; "working"; "")
+  # Only notifications that need you mark the tab waiting; the 60s idle
+  # reminder (idle_prompt) leaves "done" alone.
+  | addhook("Notification"; "waiting";
+      "permission_prompt|elicitation_dialog|elicitation_url_dialog|worker_permission_prompt|agent_needs_input")
+  | addhook("Stop"; "done"; "")
+  | .preferredNotifChannel //= "ghostty"
+' <<<"$input" || printf '%s' "$input"

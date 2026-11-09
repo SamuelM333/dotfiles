@@ -1,3 +1,5 @@
+import 'ai.just'
+
 # Host-specific recipes, only installed where they apply (see .chezmoiignore)
 import? 'claude.just'
 import? 'blade15.just'

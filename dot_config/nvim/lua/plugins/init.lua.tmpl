@@ -33,6 +33,16 @@ return {
     end,
   },
 
+  -- C-h/j/k/l move between Neovim splits and tmux panes (tmux side in ~/.config/tmux).
+  -- The keymaps are set in mappings.lua, after NvChad's own C-h/j/k/l.
+  {
+    "christoomey/vim-tmux-navigator",
+    lazy = false,
+    init = function()
+      vim.g.tmux_navigator_no_mappings = 1
+    end,
+  },
+
   -- LuaSnip's submodules only feed the optional jsregexp build, which we don't run.
   -- Recursing into them broke a lazy update when upstream reshuffled them, leaving
   -- a half-checked-out tree that lazy then reports as "local changes".

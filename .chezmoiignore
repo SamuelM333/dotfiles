@@ -16,6 +16,7 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}
+.claude
 .config/just/claude.just
 .config/environment.d
 {{- end }}

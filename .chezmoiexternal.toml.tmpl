@@ -19,3 +19,25 @@
     type = "git-repo"
     url = "https://github.com/christoomey/vim-tmux-navigator.git"
     refreshPeriod = "168h" # 7 days
+
+# Agent skills, shared by every coding agent through ~/.agents/skills
+# (private_dot_claude/skills links them into Claude Code).
+# Pinned to a commit: skills are instructions and scripts agents run, so
+# review upstream changes before bumping a commit.
+{{- $skills := list
+      (dict "repo" "JuliusBrussee/caveman" "commit" "9b68f7ed12b05e7efaff18e65c5a3fc2849fd0a4"
+            "names" (list "caveman" "caveman-commit" "caveman-explore" "caveman-help" "caveman-review"))
+      (dict "repo" "vercel-labs/skills" "commit" "92a9a34ac3bf88e695e468b90c7bf32f163d32c8"
+            "names" (list "find-skills")) }}
+{{- range $skills }}
+{{-   $src := . }}
+{{-   range .names }}
+
+[".agents/skills/{{ . }}"]
+    type = "archive"
+    url = "https://github.com/{{ $src.repo }}/archive/{{ $src.commit }}.tar.gz"
+    stripComponents = 3
+    include = ["*/skills/{{ . }}/**"]
+    exact = true
+{{-   end }}
+{{- end }}

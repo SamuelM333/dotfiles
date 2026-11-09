@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Adds the tmux agent-status hooks to Claude Code's settings, and defaults
 # notifications to Ghostty's OSC 777 (inside tmux, the "auto" channel sees
-# TERM_PROGRAM=tmux and sends nothing). Keeps everything else in the file as it
-# is, including a channel picked in /config. chezmoi passes the current file on
+# TERM_PROGRAM=tmux and sends nothing). Also sets defaults for the theme,
+# notification toggles and plugins. Keeps everything else in the file as it is,
+# including values changed in /config. chezmoi passes the current file on
 # stdin and writes back what this prints.
 
 input=$(cat)
@@ -30,4 +31,10 @@ jq --indent 2 '
       "permission_prompt|elicitation_dialog|elicitation_url_dialog|worker_permission_prompt|agent_needs_input")
   | addhook("Stop"; "done"; "")
   | .preferredNotifChannel //= "ghostty"
+  | .theme //= "auto"
+  | .inputNeededNotifEnabled //= false
+  | .agentPushNotifEnabled //= false
+  | .enabledPlugins["cc-plugin-you-should-know@builtin"] //= true
+  | .enabledPlugins["egm@egm"] //= true
+  | .extraKnownMarketplaces.egm //= {source: {source: "github", repo: "google/elephant-goldfish-model"}}
 ' <<<"$input" || printf '%s' "$input"

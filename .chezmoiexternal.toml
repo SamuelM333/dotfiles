@@ -19,11 +19,3 @@
     type = "git-repo"
     url = "https://github.com/christoomey/vim-tmux-navigator.git"
     refreshPeriod = "168h" # 7 days
-
-[".config/tmux/plugins/tmux-which-key"]
-    type = "git-repo"
-    url = "https://github.com/alexwforsythe/tmux-which-key.git"
-    refreshPeriod = "168h" # 7 days
-    # Its menu builder imports PyYAML from a submodule.
-    clone.args = ["--recurse-submodules"]
-    pull.args = ["--recurse-submodules"]

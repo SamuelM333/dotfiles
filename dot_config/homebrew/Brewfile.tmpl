@@ -4,7 +4,6 @@ tap "protonpass/tap"
 tap "robinovitch61/tap"
 tap "terror/tap"
 tap "valkyrie00/bbrew"
-tap "ublue-os/experimental-tap"
 
 brew "atuin"
 brew "bash-language-server"
@@ -56,6 +55,8 @@ cask "zed"
 {{- if eq .chezmoi.os "darwin" }}
 
 {{- else if eq .chezmoi.os "linux" }}
+tap "ublue-os/experimental-tap"
+cask "ublue-os/experimental-tap/claude-desktop-linux"
 brew "texlive"
 brew "uutils-coreutils"
 brew "dysk"

@@ -5,7 +5,7 @@
 
 // Hold the first paint until the CSS has usually arrived, so pages don't
 // flash unstyled while loading. Defaults are 5 ms.
-user_pref("nglayout.initialpaint.delay", 250);
-user_pref("nglayout.initialpaint.delay_in_oopif", 250);
+user_pref("nglayout.initialpaint.delay", 350);
+user_pref("nglayout.initialpaint.delay_in_oopif", 350);
 // Redraw a loading page every 0.5 s instead of every 0.12 s.
 user_pref("content.notify.interval", 500000);

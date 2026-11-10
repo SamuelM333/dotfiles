@@ -5,14 +5,10 @@
 
 SOURCE={{ joinPath .chezmoi.sourceDir "firefox/user.js" | quote }}
 
-{{ if eq .chezmoi.os "darwin" -}}
-ROOTS=("$HOME/Library/Application Support/Firefox")
-{{- else -}}
 ROOTS=(
     "$HOME/.mozilla/firefox"
     "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
 )
-{{- end }}
 
 for root in "${ROOTS[@]}"; do
     [ -f "$root/profiles.ini" ] || continue

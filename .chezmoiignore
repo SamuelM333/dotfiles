@@ -17,6 +17,7 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}
+.chezmoiscripts/firefox-user-js.sh
 .claude
 .config/just/claude.just
 .config/environment.d

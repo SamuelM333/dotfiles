@@ -1,3 +1,4 @@
+# Common
 tap "hashicorp/tap"
 tap "jesseduffield/lazydocker"
 tap "protonpass/tap"
@@ -21,7 +22,6 @@ brew "jesseduffield/lazydocker/lazydocker"
 brew "jless"
 brew "jq"
 brew "just"
-brew "lazyssh"
 brew "lua-language-server"
 brew "marksman"
 brew "neovim"
@@ -50,24 +50,28 @@ brew "yaml-language-server"
 brew "yq"
 brew "zoxide"
 
-cask "zed"
+{{ if eq .chezmoi.os "darwin" -}}
+# MacOS
 
-{{- if eq .chezmoi.os "darwin" }}
-
-{{- else if eq .chezmoi.os "linux" }}
+{{- else if eq .chezmoi.os "linux" -}}
+# Linux
 tap "ublue-os/experimental-tap"
-cask "ublue-os/experimental-tap/claude-desktop-linux"
-brew "texlive"
-brew "uutils-coreutils"
-brew "dysk"
-brew "mongosh"
+
 brew "devcontainer"
+brew "dysk"
 brew "glab"
 brew "hashicorp/tap/consul"
 brew "hashicorp/tap/nomad"
 brew "hashicorp/tap/packer"
 brew "hashicorp/tap/vault"
+brew "lazyssh"
+brew "mongosh"
 brew "robinovitch61/tap/wander"
+brew "texlive"
+brew "uutils-coreutils"
+
+cask "ublue-os/experimental-tap/claude-desktop-linux"
+cask "zed"
 
 flatpak "com.github.finefindus.eyedropper"
 flatpak "com.github.huluti.Curtail"
@@ -98,5 +102,4 @@ flatpak "org.videolan.VLC"
 flatpak "page.tesk.Refine"
 flatpak "se.sjoerd.Graphs"
 flatpak "us.zoom.Zoom"
-
-{{- end }}
+{{ end }}

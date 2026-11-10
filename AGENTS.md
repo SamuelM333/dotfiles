@@ -11,7 +11,8 @@
 | [.chezmoidata/](.chezmoidata) | Static template data |
 | [.chezmoitemplates/](.chezmoitemplates) | Shared template fragments, pulled in with `{{ template "…" . }}` |
 | [.chezmoiexternal.toml.tmpl](.chezmoiexternal.toml.tmpl) | Files and repos chezmoi downloads (ghostty shaders and themes, agent skills into `~/.agents/skills`) |
-| [private_dot_claude/](private_dot_claude) | Claude Code (Linux only): `modify_settings.json` merges hooks and defaults into `~/.claude/settings.json`; `skills/` links `~/.claude/skills/<name>` to `~/.agents/skills/<name>` |
+| [private_dot_claude/](private_dot_claude) | Claude Code (Linux only): `modify_settings.json` merges hooks and defaults into `~/.claude/settings.json`; `skills/` links `~/.claude/skills/<name>` to `~/.agents/skills/<name>`; `rules/` holds global rules, loaded in every project |
+| [dot_cursor/rules/](dot_cursor/rules) | Cursor (macOS only): global rules (`~/.cursor/rules/*.mdc`, `alwaysApply: true`). A rule shared with Claude Code keeps its body in `.chezmoitemplates/` and both files include it |
 | [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply |
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [firefox/user.js](firefox/user.js) | Firefox prefs; `run_after_firefox-user-js.sh.tmpl` copies it into every profile in `profiles.ini` (native and Flatpak). Linux only: macOS denies the terminal access to Firefox's app data |

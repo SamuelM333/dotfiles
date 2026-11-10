@@ -1,3 +1,4 @@
+# Common
 tap "hashicorp/tap"
 tap "jesseduffield/lazydocker"
 tap "protonpass/tap"
@@ -49,13 +50,12 @@ brew "yaml-language-server"
 brew "yq"
 brew "zoxide"
 
-{{- if eq .chezmoi.os "darwin" }}
+{{ if eq .chezmoi.os "darwin" -}}
+# MacOS
 
-{{- else if eq .chezmoi.os "linux" }}
+{{- else if eq .chezmoi.os "linux" -}}
+# Linux
 tap "ublue-os/experimental-tap"
-
-cask "ublue-os/experimental-tap/claude-desktop-linux"
-cask "zed"
 
 brew "devcontainer"
 brew "dysk"
@@ -69,6 +69,9 @@ brew "mongosh"
 brew "robinovitch61/tap/wander"
 brew "texlive"
 brew "uutils-coreutils"
+
+cask "ublue-os/experimental-tap/claude-desktop-linux"
+cask "zed"
 
 flatpak "com.github.finefindus.eyedropper"
 flatpak "com.github.huluti.Curtail"
@@ -99,4 +102,4 @@ flatpak "org.videolan.VLC"
 flatpak "page.tesk.Refine"
 flatpak "se.sjoerd.Graphs"
 flatpak "us.zoom.Zoom"
-{{ end -}}
+{{ end }}

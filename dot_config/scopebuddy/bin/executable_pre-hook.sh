@@ -8,4 +8,7 @@ razer-cli write fan ac 5000 || true
 
 input-remapper-control --command start --device "Razer Razer Tartarus V2" --preset "General" || true
 
+# Move the lab Nomad jobs off this machine while the game runs
+"$HOME/.config/scopebuddy/bin/lab-nomad.sh" drain || true
+
 exit 0

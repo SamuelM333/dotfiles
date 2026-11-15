@@ -5,3 +5,6 @@ razer-cli write power ac 0 || true
 razer-cli write fan ac 0 || true
 
 input-remapper-control --command stop --device "Razer Razer Tartarus V2" || true
+
+# Take lab Nomad jobs again
+"$HOME/.config/scopebuddy/bin/lab-nomad.sh" enable || true

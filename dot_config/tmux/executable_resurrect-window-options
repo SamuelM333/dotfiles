@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Save or restore the window options tmux-resurrect doesn't keep (@color,
+# @ai_title). Called by resurrect's post-save-all and post-restore-all hooks.
+# Windows are matched by session name and window index, which resurrect keeps.
+set -uo pipefail
+
+file=${XDG_DATA_HOME:-$HOME/.local/share}/tmux/window-options
+sep=$'\x1f' # unit separator: can't appear in a session name or option value
+options=(@color @ai_title)
+
+case ${1:-} in
+  save)
+    mkdir -p -- "${file%/*}"
+    tmp=$file.tmp
+    : >"$tmp"
+    while read -r id; do
+      line=$(tmux display-message -p -t "$id" '#{session_name}')$sep$(tmux display-message -p -t "$id" '#{window_index}')
+      for opt in "${options[@]}"; do
+        # -w without -g: only values set on the window, not the global default.
+        line+=$sep$(tmux show-options -wqv -t "$id" "$opt")
+      done
+      printf '%s\n' "$line" >>"$tmp"
+    done < <(tmux list-windows -a -F '#{window_id}')
+    mv -- "$tmp" "$file"
+    ;;
+  restore)
+    [[ -r $file ]] || exit 0
+    while IFS=$sep read -r session index values; do
+      target="=$session:$index"
+      tmux has-session -t "$target" 2>/dev/null || continue
+      IFS=$sep read -r -a vals <<<"$values"
+      for i in "${!options[@]}"; do
+        [[ -n ${vals[i]:-} ]] && tmux set-option -w -t "$target" "${options[i]}" "${vals[i]}"
+      done
+    done <"$file"
+    ;;
+  *)
+    echo "usage: resurrect-window-options save|restore" >&2
+    exit 1
+    ;;
+esac

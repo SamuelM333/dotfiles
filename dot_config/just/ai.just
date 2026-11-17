@@ -3,13 +3,26 @@
 # Agent the launcher starts: Claude Code on the Linux hosts, Cursor's CLI on macOS.
 ai_agent := env("AI_AGENT", if os() == "macos" { "agent" } else { "claude" })
 
-# Open (or switch to) a tmux window TITLE (default: current dir name) with nvim + the agent in the current dir; COLOR colors its tab
+# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab, -v/--vim (or AI_VIM=1) adds nvim beside it
 [no-cd]
 [positional-arguments]
-ai title="" color="":
+ai *args:
     #!/usr/bin/env bash
     set -euo pipefail
     dir=$PWD
+    # Neovim beside the agent is off by default: -v/--vim or a truthy AI_VIM turns it on.
+    case ${AI_VIM:-} in
+      1 | y | Y | yes | true) vim=1 ;;
+      *) vim=0 ;;
+    esac
+    positional=()
+    for arg in "$@"; do
+      case $arg in
+        -v | --vim) vim=1 ;;
+        *) positional+=("$arg") ;;
+      esac
+    done
+    set -- "${positional[@]}"
     title=${1:-}
     # The prefix + a prompt sets AI_NEW_WINDOW: a blank title there always opens a
     # new window named after the dir, even if one with that name exists.
@@ -44,12 +57,16 @@ ai title="" color="":
         win=$(tmux new-session -d -s "$session" -n "$title" -c "$dir" -P -F '#{window_id}')
       fi
       tmux set-option -w -t "$win" @ai_title "$title"
-      editor_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
-      agent_pane=$(tmux split-window -h -d -l 45% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
-      # Start both through the shell, so quitting nvim or the agent leaves a prompt.
-      tmux send-keys -t "$editor_pane" "nvim ." Enter
-      tmux send-keys -t "$agent_pane" "$agent" Enter
-      tmux select-pane -t "$editor_pane"
+      first_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
+      # Start each through the shell, so quitting nvim or the agent leaves a prompt.
+      if ((vim)); then
+        agent_pane=$(tmux split-window -h -d -l 45% -t "$first_pane" -c "$dir" -P -F '#{pane_id}')
+        tmux send-keys -t "$first_pane" "nvim ." Enter
+        tmux send-keys -t "$agent_pane" "$agent" Enter
+        tmux select-pane -t "$first_pane"
+      else
+        tmux send-keys -t "$first_pane" "$agent" Enter
+      fi
     fi
 
     if [[ -n $color ]]; then

@@ -41,6 +41,12 @@ ai *args:
       session=${AI_SESSION:-ai}
     fi
 
+    # Start the server before looking for windows. Loading tmux.conf runs
+    # continuum's auto-restore, and start-server returns only after it ends, so
+    # a restored session and its windows count as existing below instead of
+    # colliding with a new one. A no-op when the server is already running.
+    tmux start-server
+
     # Existing window with this title, matched on @ai_title so a manual rename
     # doesn't create a duplicate. tmux turns tabs into "_" in -F output, so
     # split on the first space (window ids never contain one, titles may).

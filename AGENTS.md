@@ -16,6 +16,7 @@
 | [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply |
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [firefox/user.js](firefox/user.js) | Firefox prefs; `run_after_firefox-user-js.sh.tmpl` copies it into every profile in `profiles.ini` (native and Flatpak). Linux only: macOS denies the terminal access to Firefox's app data |
+| [dot_config/distrobox/](dot_config/distrobox) | `distrobox assemble` manifest and box init scripts (`thinkpad-e16` only); `run_onchange_after_distrobox-assemble.sh.tmpl` rebuilds the boxes when they change. The `Ubuntu` box routes JACK to PipeWire and exports Waveform 14 |
 | [patches/](patches) | Diffs applied to external files by the `run_after` script |
 
 Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostname`, `.pretty_hostname`) or in `.chezmoiignore`, not in separate branches.

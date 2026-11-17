@@ -9,6 +9,8 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.hostname "thinkpad-e16" }}
+.config/distrobox
+.chezmoiscripts/distrobox-assemble.sh
 {{- end }}
 
 {{- if ne .chezmoi.hostname "blade15" }}

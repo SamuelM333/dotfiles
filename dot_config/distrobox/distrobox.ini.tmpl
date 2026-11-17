@@ -1,0 +1,12 @@
+# Manifest for `distrobox assemble`. run_onchange_after_distrobox-assemble.sh
+# rebuilds the boxes whenever this file or an init script changes.
+
+# Waveform 14 and other audio tools.
+[Ubuntu]
+image=ubuntu:24.04
+# Recreate the box on every assemble, so it always matches this file.
+# Anything installed by hand inside it is lost; $HOME is shared and survives.
+replace=true
+additional_packages="pipewire-jack"
+init_hooks={{ joinPath .chezmoi.homeDir ".config/distrobox/ubuntu-init.sh" }}
+exported_apps="waveform14"

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Init hook of the Ubuntu box (see distrobox.ini). Runs as root inside the box
+# on every start.
+
+# Route every JACK client in the box to PipeWire's libjack, so apps work
+# without a pw-jack prefix in their launchers.
+cp /usr/share/doc/pipewire/examples/ld.so.conf.d/pipewire-jack-*.conf /etc/ld.so.conf.d/
+ldconfig
+
+# Tracktion has no apt repo: install the newest Waveform 14 .deb from ~/Downloads.
+if [ ! -x /usr/bin/Waveform14 ]; then
+    deb=$(ls -t {{ joinPath .chezmoi.homeDir "Downloads" | quote }}/*[Ww]aveform*14*.deb 2> /dev/null | head -n 1)
+    if [ -n "$deb" ]; then
+        apt-get install -y "$deb"
+    else
+        echo "warning: no Waveform 14 .deb in ~/Downloads" >&2
+    fi
+fi
+
+exit 0

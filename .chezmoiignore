@@ -9,7 +9,8 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.hostname "thinkpad-e16" }}
-.local/share/applications/Ubuntu-waveform14.desktop
+.config/distrobox
+.chezmoiscripts/distrobox-assemble.sh
 {{- end }}
 
 {{- if ne .chezmoi.hostname "blade15" }}

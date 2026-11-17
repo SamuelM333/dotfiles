@@ -1,0 +1,11 @@
+#!/bin/bash
+# Rebuild the boxes in the distrobox manifest whenever it or an init script changes.
+# manifest hash: {{ includeTemplate "dot_config/distrobox/distrobox.ini.tmpl" . | sha256sum }}
+# ubuntu-init hash: {{ includeTemplate "dot_config/distrobox/executable_ubuntu-init.sh.tmpl" . | sha256sum }}
+
+if ! command -v distrobox > /dev/null; then
+    echo "warning: distrobox not installed, skipping assemble" >&2
+    exit 0
+fi
+
+distrobox assemble create --file {{ joinPath .chezmoi.homeDir ".config/distrobox/distrobox.ini" | quote }}

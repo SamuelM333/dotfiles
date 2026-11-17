@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Adds the tmux session-id hooks to Cursor's user hooks (~/.cursor/hooks.json):
+# the CLI agent's conversation id goes on its tmux pane (just -g agent-state
+# started agent), so a tmux restore resumes it with `agent --resume <id>` (see
+# ~/.config/tmux/resurrect-extras). Keeps every other hook in the file.
+# chezmoi passes the current file on stdin and writes back what this prints.
+
+input=$(cat)
+[[ -n $input ]] || input='{}'
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s' "$input"
+  exit 0
+fi
+
+# addhook drops any earlier copy of our hook and appends it once; other hooks
+# are left alone.
+jq --indent 2 '
+  def addhook($event; $cmd):
+    .hooks[$event] = ((.hooks[$event] // [])
+      | map(select(.command != $cmd))
+      | . + [{command: $cmd}]);
+  .version //= 1
+  | addhook("sessionStart"; "just -g agent-state started agent")
+  | addhook("sessionEnd"; "just -g agent-state ended agent")
+' <<<"$input" || printf '%s' "$input"

@@ -41,6 +41,12 @@ ai *args:
       session=${AI_SESSION:-ai}
     fi
 
+    # Start the server before looking for windows. Loading tmux.conf runs
+    # continuum's auto-restore, and start-server returns only after it ends, so
+    # a restored session and its windows count as existing below instead of
+    # colliding with a new one. A no-op when the server is already running.
+    tmux start-server
+
     # Existing window with this title, matched on @ai_title so a manual rename
     # doesn't create a duplicate. tmux turns tabs into "_" in -F output, so
     # split on the first space (window ids never contain one, titles may).
@@ -82,13 +88,14 @@ ai *args:
       echo "ai: $session:$title is ready, attach with: tmux attach -t $session" >&2
     fi
 
-# Mark the tmux window this agent runs in as working, waiting or done (or clear it); called from agent hooks
+# Mark the tmux window this agent runs in as working, waiting or done (or clear it), or record its session id on the pane (started/ended, AGENT: claude or agent); called from agent hooks
 [no-cd]
 [positional-arguments]
-agent-state state:
+agent-state state agent="claude":
     #!/usr/bin/env bash
     # Never fails, so a hook can't block the agent.
     state=$1
+    agent=${2:-claude}
 
     # Hooks get JSON on stdin; read it all so the agent isn't left writing to a pipe.
     input=
@@ -111,7 +118,25 @@ agent-state state:
     case $state in
       working | waiting | done) tmux set-option -w -t "$pane" @agent_state "$state" 2>/dev/null ;;
       clear) tmux set-option -wu -t "$pane" @agent_state 2>/dev/null ;;
-      *) echo "usage: agent-state working|waiting|done|clear" >&2; exit 0 ;;
+      # The pane keeps the agent's session id (from the hook's JSON: Claude
+      # sends session_id, Cursor conversation_id) and which agent it is, so a
+      # tmux restore can resume that exact conversation (see resurrect-extras).
+      started)
+        id=
+        if [[ -n $input ]] && command -v jq >/dev/null 2>&1; then
+          id=$(jq -r '.session_id // .conversation_id // empty' <<<"$input" 2>/dev/null)
+        fi
+        case $agent in claude | agent) ;; *) exit 0 ;; esac
+        if [[ $id =~ ^[A-Za-z0-9-]+$ ]]; then
+          tmux set-option -p -t "$pane" @agent_session "$id" 2>/dev/null
+          tmux set-option -p -t "$pane" @agent_cmd "$agent" 2>/dev/null
+        fi
+        ;;
+      ended)
+        tmux set-option -pu -t "$pane" @agent_session 2>/dev/null
+        tmux set-option -pu -t "$pane" @agent_cmd 2>/dev/null
+        ;;
+      *) echo "usage: agent-state working|waiting|done|clear|started|ended [claude|agent]" >&2; exit 0 ;;
     esac
 
     [[ $state == waiting || $state == done ]] || exit 0

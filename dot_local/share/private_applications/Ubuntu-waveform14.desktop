@@ -1,0 +1,23 @@
+[Desktop Entry]
+Name=Waveform 14
+GenericName=Waveform (on Ubuntu)
+Comment=Audio and MIDI workstation (on Ubuntu)
+Exec=/usr/sbin/distrobox-enter  -n Ubuntu  --  /usr/bin/pw-jack /usr/bin/Waveform14  %u
+Icon=waveform14
+Terminal=false
+Type=Application
+Categories=AudioVideo;AudioEditing;
+MimeType=application/x-waveform14-project;application/x-waveform14-archive;application/x-waveform14-edit;application/x-waveform14-edit-binary;application/x-waveform14-key;
+Version=1.0
+StartupWMClass=Waveform
+Name[en]=Waveform 14
+Name[en_US]=Waveform 14
+Name[en_US.UTF-8]=Waveform 14
+Comment[en]=Audio and MIDI workstation (on Ubuntu)
+Comment[en_US]=Audio and MIDI workstation (on Ubuntu)
+Comment[en_US.UTF-8]=Audio and MIDI workstation (on Ubuntu)
+PrefersNonDefaultGPU=false
+Hidden=false
+NoDisplay=false
+StartupNotify=false
+

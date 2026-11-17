@@ -9,6 +9,7 @@ Library
 {{- end }}
 
 {{- if ne .chezmoi.hostname "thinkpad-e16" }}
+.local/share/applications/Ubuntu-waveform14.desktop
 {{- end }}
 
 {{- if ne .chezmoi.hostname "blade15" }}

@@ -58,7 +58,13 @@ case ${1:-} in
           # on a running server) may still have Claude or something else open.
           cmd=$(tmux display-message -p -t "$target" '#{pane_current_command}' 2>/dev/null) || continue
           case $cmd in
-            zsh | bash | sh | fish) tmux send-keys -t "$target" "$agent_cmd --resume $agent_session" Enter ;;
+            zsh | bash | sh | fish)
+              tmux send-keys -t "$target" "$agent_cmd --resume $agent_session" Enter
+              # Cursor's CLI fires no sessionStart on --resume, so set the ids
+              # here or the next save drops this pane. Claude's hook overwrites them.
+              tmux set-option -p -t "$target" @agent_session "$agent_session"
+              tmux set-option -p -t "$target" @agent_cmd "$agent_cmd"
+              ;;
           esac
           ;;
       esac

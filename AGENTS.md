@@ -17,6 +17,7 @@
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [firefox/user.js](firefox/user.js) | Firefox prefs; `run_after_firefox-user-js.sh.tmpl` copies it into every profile in `profiles.ini` (native and Flatpak). Linux only: macOS denies the terminal access to Firefox's app data |
 | [patches/](patches) | Diffs applied to external files by the `run_after` script |
+| [.github/labeler.yml](.github/labeler.yml) | Paths that get a PR the `linux` or `macos` label (actions/labeler, run by `.github/workflows/labeler.yml`). Add new OS-specific paths here |
 
 Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostname`, `.pretty_hostname`) or in `.chezmoiignore`, not in separate branches.
 

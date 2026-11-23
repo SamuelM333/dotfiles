@@ -1,0 +1,45 @@
+# Labels for actions/labeler (.github/workflows/labeler.yml), applied from the
+# paths a PR changes. A label means "touches config specific to this OS".
+# Files that apply unchanged on both OSes (nvim, tmux, just, zed, VS Code,
+# shared ghostty config, ...) get no label. Files that hold both OSes'
+# branches, or that feed both an OS-specific target on each side, get both.
+
+linux:
+  - changed-files:
+      - any-glob-to-any-file:
+          # Claude Code, Linux only
+          - private_dot_claude/**
+          - dot_config/just/claude.just
+          # Firefox prefs, Linux only
+          - firefox/**
+          - .chezmoiscripts/*firefox*
+          # Linux-only targets (see .chezmoiignore)
+          - dot_gitconfig
+          - dot_config/environment.d/**
+          # blade15 (Linux gaming laptop)
+          - dot_config/just/blade15.just
+          - dot_config/just/scripts/**
+          - dot_config/scopebuddy/**
+          # Shared with Cursor rules on macOS
+          - .chezmoitemplates/no-emojis.md
+          - .chezmoitemplates/terminal-output.md
+          # Templates with separate Linux and macOS branches
+          - .chezmoiignore
+          - dot_zshrc.tmpl
+          - dot_config/homebrew/Brewfile.tmpl
+
+macos:
+  - changed-files:
+      - any-glob-to-any-file:
+          # Cursor, macOS only
+          - dot_cursor/**
+          # ~/Library (macOS ghostty config, ...)
+          - private_Library/**
+          - .chezmoitemplates/mac_config.ghostty
+          # Shared with Claude Code rules on Linux
+          - .chezmoitemplates/no-emojis.md
+          - .chezmoitemplates/terminal-output.md
+          # Templates with separate Linux and macOS branches
+          - .chezmoiignore
+          - dot_zshrc.tmpl
+          - dot_config/homebrew/Brewfile.tmpl

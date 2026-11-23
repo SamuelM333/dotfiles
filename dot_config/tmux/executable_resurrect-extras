@@ -7,16 +7,25 @@
 #     `just -g agent-state started`); a restore runs `<agent> --resume <id>`
 #     (claude or agent) in that pane
 # Windows and panes are matched by session name, window index and pane index,
-# which resurrect keeps.
+# which resurrect keeps. Each resurrect save gets its own extras file beside it
+# (tmux_resurrect_<time>.extras), so pointing resurrect's `last` link back at an
+# older save brings back that save's extras too.
 set -uo pipefail
 
-file=${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect-extras
+# resurrect's own default directory (scripts/helpers.sh); @resurrect-dir isn't set.
+if [[ -d $HOME/.tmux/resurrect ]]; then
+  dir=$HOME/.tmux/resurrect
+else
+  dir=${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect
+fi
+save=$(readlink -- "$dir/last" 2>/dev/null) || exit 0
+save=${save##*/}
+file=$dir/${save%.txt}.extras
 sep=$'\x1f' # unit separator: can't appear in a session name or option value
 window_options=(@color @ai_title)
 
 case ${1:-} in
   save)
-    mkdir -p -- "${file%/*}"
     tmp=$file.tmp
     : >"$tmp"
     while read -r id; do
@@ -35,6 +44,10 @@ case ${1:-} in
         "$sep" "$agent_session" "$sep" "${agent_cmd:-claude}" >>"$tmp"
     done < <(tmux list-panes -a -F '#{pane_id}')
     mv -- "$tmp" "$file"
+    # resurrect deletes old saves; drop their extras too.
+    for extras in "$dir"/*.extras; do
+      [[ -e ${extras%.extras}.txt ]] || rm -f -- "$extras"
+    done
     ;;
   restore)
     [[ -r $file ]] || exit 0
@@ -56,16 +69,20 @@ case ${1:-} in
           case $agent_cmd in claude | agent) ;; *) continue ;; esac
           # Only into a pane sitting at a shell: a pane that survived (a restore
           # on a running server) may still have Claude or something else open.
-          cmd=$(tmux display-message -p -t "$target" '#{pane_current_command}' 2>/dev/null) || continue
-          case $cmd in
-            zsh | bash | sh | fish)
-              tmux send-keys -t "$target" "$agent_cmd --resume $agent_session" Enter
-              # Cursor's CLI fires no sessionStart on --resume, so set the ids
-              # here or the next save drops this pane. Claude's hook overwrites them.
-              tmux set-option -p -t "$target" @agent_session "$agent_session"
-              tmux set-option -p -t "$target" @agent_cmd "$agent_cmd"
-              ;;
-          esac
+          # A pane restored just now may still run its shell's startup commands
+          # (pane_current_command flickers through them), so wait up to 5s.
+          at_shell=0
+          for _ in {1..50}; do
+            cmd=$(tmux display-message -p -t "$target" '#{pane_current_command}' 2>/dev/null) || break
+            case $cmd in zsh | bash | sh | fish) at_shell=1 && break ;; esac
+            sleep 0.1
+          done
+          ((at_shell)) || continue
+          tmux send-keys -t "$target" "$agent_cmd --resume $agent_session" Enter
+          # Cursor's CLI fires no sessionStart on --resume, so set the ids
+          # here or the next save drops this pane. Claude's hook overwrites them.
+          tmux set-option -p -t "$target" @agent_session "$agent_session"
+          tmux set-option -p -t "$target" @agent_cmd "$agent_cmd"
           ;;
       esac
     done <"$file"

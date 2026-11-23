@@ -44,8 +44,10 @@ ai *args:
     # Start the server before looking for windows. Loading tmux.conf runs
     # continuum's auto-restore, and start-server returns only after it ends, so
     # a restored session and its windows count as existing below instead of
-    # colliding with a new one. A no-op when the server is already running.
-    tmux start-server
+    # colliding with a new one. Continuum skips that restore when any other tmux
+    # server runs (another -L socket or TMUX_TMPDIR), so a server still without
+    # sessions after the config restores here. A no-op when a session exists.
+    tmux start-server \; run-shell "tmux has-session 2>/dev/null || ~/.config/tmux/plugins/tmux-resurrect/scripts/restore.sh"
 
     # Existing window with this title, matched on @ai_title so a manual rename
     # doesn't create a duplicate. tmux turns tabs into "_" in -F output, so

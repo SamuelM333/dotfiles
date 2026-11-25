@@ -7,7 +7,7 @@
 | Path | What |
 |---|---|
 | `dot_*`, `private_*`, `executable_*`, `*.tmpl` | Managed files, named with chezmoi's source-state attributes (`dot_zshrc.tmpl` → `~/.zshrc`) |
-| [.chezmoi.toml.tmpl](.chezmoi.toml.tmpl) | Config template, generates the per-machine data (`.pretty_hostname`, …) |
+| [.chezmoi.toml.tmpl](.chezmoi.toml.tmpl) | Config template, generates the per-machine data (`.pretty_hostname`, …), asked once per machine by `chezmoi init` and kept on later runs. Also sets `bitwarden.unlock = "auto"`, so a run asks for the master password once, not once per item |
 | [.chezmoidata/](.chezmoidata) | Static template data |
 | [.chezmoidata/xdg.toml](.chezmoidata/xdg.toml) | XDG dirs (`XDG_PROJECTS_DIR`, …) for the whole login session, not just shells: rendered into `environment.d` on Linux and into a LaunchAgent that runs `launchctl setenv` on macOS (`private_Library/LaunchAgents/`, reloaded on change by `run_onchange_after_load-environment-agent.sh.tmpl`) |
 | [.chezmoitemplates/](.chezmoitemplates) | Shared template fragments, pulled in with `{{ template "…" . }}` |
@@ -38,6 +38,7 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 ## Public repo
 
 - **Nothing secret goes in a commit.** No tokens, keys, passwords, private hostnames/IPs or work-specific config. Pull secrets in at apply time from a password manager or environment variable through a template, or leave the file out with `.chezmoiignore`.
+- **The password manager depends on the OS.** macOS uses Bitwarden (`bitwardenFields` in templates, the `[bitwarden]` section of `.chezmoi.toml.tmpl`); Linux uses Proton Pass (`pass-cli`). Bitwarden changes get the `macos` label, Proton Pass changes `linux`.
 - Check the staged diff before every commit (`git diff --cached`).
 
 ## Documentation

@@ -7,7 +7,7 @@
 | Path | What |
 |---|---|
 | `dot_*`, `private_*`, `executable_*`, `*.tmpl` | Managed files, named with chezmoi's source-state attributes (`dot_zshrc.tmpl` → `~/.zshrc`) |
-| [.chezmoi.toml.tmpl](.chezmoi.toml.tmpl) | Config template, generates the per-machine data (`.pretty_hostname`, …) |
+| [.chezmoi.toml.tmpl](.chezmoi.toml.tmpl) | Config template, generates the per-machine data (`.pretty_hostname`, …), asked once per machine by `chezmoi init` and kept on later runs. Also sets `bitwarden.unlock = "auto"`, so a run asks for the master password once, not once per item |
 | [.chezmoidata/](.chezmoidata) | Static template data |
 | [.chezmoitemplates/](.chezmoitemplates) | Shared template fragments, pulled in with `{{ template "…" . }}` |
 | [.chezmoiexternal.toml.tmpl](.chezmoiexternal.toml.tmpl) | Files and repos chezmoi downloads (ghostty shaders and themes, agent skills into `~/.agents/skills`) |

@@ -1,0 +1,5 @@
+# XDG dirs, relative to $HOME, set for the whole login session: environment.d
+# on Linux, a LaunchAgent running launchctl setenv on macOS.
+[xdg]
+# Work items like code checkouts. Not a standard XDG user dir.
+XDG_PROJECTS_DIR = "Projects"

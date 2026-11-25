@@ -4,6 +4,7 @@ CLAUDE.md
 firefox
 
 {{- if ne .chezmoi.os "darwin" }}
+.chezmoiscripts/load-environment-agent.sh
 .cursor
 Library
 {{- end }}

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Reload the environment LaunchAgent so its launchctl setenv runs now instead
+# of at the next login. Only apps started afterwards see the new values.
+# Variables dropped from xdg.toml stay set until logout or launchctl unsetenv.
+# xdg.toml hash: {{ .xdg | toJson | sha256sum }}
+# plist hash: {{ include "private_Library/LaunchAgents/xyz.samuelmurillo.environment.plist.tmpl" | sha256sum }}
+
+PLIST={{ joinPath .chezmoi.homeDir "Library/LaunchAgents/xyz.samuelmurillo.environment.plist" | quote }}
+
+launchctl bootout "gui/$(id -u)" "$PLIST" 2>/dev/null
+launchctl bootstrap "gui/$(id -u)" "$PLIST"

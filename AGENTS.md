@@ -37,6 +37,7 @@ Per-host and per-OS differences go in templates (`.chezmoi.os`, `.chezmoi.hostna
 ## Public repo
 
 - **Nothing secret goes in a commit.** No tokens, keys, passwords, private hostnames/IPs or work-specific config. Pull secrets in at apply time from a password manager or environment variable through a template, or leave the file out with `.chezmoiignore`.
+- **The password manager depends on the OS.** macOS uses Bitwarden (`bitwardenFields` in templates, the `[bitwarden]` section of `.chezmoi.toml.tmpl`); Linux uses Proton Pass (`pass-cli`). Bitwarden changes get the `macos` label, Proton Pass changes `linux`.
 - Check the staged diff before every commit (`git diff --cached`).
 
 ## Documentation

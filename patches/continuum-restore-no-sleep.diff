@@ -1,0 +1,11 @@
+--- a/scripts/continuum_restore.sh
++++ b/scripts/continuum_restore.sh
+@@ -11,8 +11,6 @@
+ }
+ 
+ fetch_and_run_tmux_resurrect_restore_script() {
+-	# give tmux some time to start and source all the plugins
+-	sleep 1
+ 	local resurrect_restore_script_path="$(get_tmux_option "$resurrect_restore_path_option" "")"
+ 	if [ -n "$resurrect_restore_script_path" ]; then
+ 		"$resurrect_restore_script_path"

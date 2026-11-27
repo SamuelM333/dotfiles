@@ -30,3 +30,7 @@ Library
 {{- if ne .chezmoi.os "linux" }}
 .gitconfig
 {{- end }}
+
+{{- if not (stat "/var/lib/flatpak/app/ch.protonmail.protonmail-bridge") }}
+.config/autostart/ch.protonmail.protonmail-bridge.desktop
+{{- end }}

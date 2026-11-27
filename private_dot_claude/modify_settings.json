@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds the tmux agent-status hooks to Claude Code's settings, and turns off
+# Adds the tmux agent-status and session-id hooks to Claude Code's settings, and turns off
 # Claude Code's own notifications: the hooks send them instead (just -g
 # agent-state), without the 60s idle reminder. Also sets defaults for the
 # theme, notification toggles and plugins. Keeps everything else in the file as
@@ -30,6 +30,9 @@ jq --indent 2 '
   | addhook("Notification"; "waiting";
       "permission_prompt|elicitation_dialog|elicitation_url_dialog|worker_permission_prompt|agent_needs_input")
   | addhook("Stop"; "done"; "")
+  # The pane remembers the session id, so a tmux restore resumes this conversation.
+  | addhook("SessionStart"; "started"; "")
+  | addhook("SessionEnd"; "ended"; "")
   # Always off: any other channel would duplicate the notifications from the hooks.
   | .preferredNotifChannel = "notifications_disabled"
   | .theme //= "auto"

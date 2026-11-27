@@ -16,6 +16,8 @@ Library
 .config/scopebuddy
 .config/just/blade15.just
 .config/just/scripts
+.config/systemd/user/openrazer-daemon.service
+.chezmoiscripts/openrazer-daemon.sh
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}

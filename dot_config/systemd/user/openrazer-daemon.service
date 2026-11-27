@@ -1,0 +1,13 @@
+# OpenRazer daemon from the venv that
+# .chezmoiscripts/run_onchange_after_openrazer-daemon.sh.tmpl installs
+[Unit]
+Description=Daemon to manage razer devices in userspace
+Documentation=https://github.com/openrazer/openrazer
+
+[Service]
+Type=dbus
+BusName=org.razer
+ExecStart=%h/.local/share/openrazer/venv/bin/openrazer-daemon -F
+
+[Install]
+WantedBy=default.target

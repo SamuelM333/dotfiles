@@ -14,7 +14,7 @@
 | [.chezmoiexternal.toml.tmpl](.chezmoiexternal.toml.tmpl) | Files and repos chezmoi downloads (ghostty shaders and themes, agent skills into `~/.agents/skills`) |
 | [private_dot_claude/](private_dot_claude) | Claude Code (Linux only): `modify_settings.json` merges hooks and defaults into `~/.claude/settings.json`; `skills/` links `~/.claude/skills/<name>` to `~/.agents/skills/<name>`; `rules/` holds global rules, loaded in every project |
 | [dot_cursor/rules/](dot_cursor/rules) | Cursor (macOS only): global rules (`~/.cursor/rules/*.mdc`, `alwaysApply: true`). A rule shared with Claude Code keeps its body in `.chezmoitemplates/` and both files include it |
-| [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply |
+| [.chezmoiscripts/](.chezmoiscripts) | `run_*` scripts chezmoi runs on apply. `run_onchange_after_openrazer-daemon.sh.tmpl` (blade15 only) installs the OpenRazer daemon into a venv at `~/.local/share/openrazer/venv` from the release in `.chezmoidata/openrazer.toml`, started by the user unit `dot_config/systemd/user/openrazer-daemon.service`. The kernel modules and udev rules come with the Bazzite image, and layering `openrazer-daemon` would block image updates |
 | [.chezmoiignore](.chezmoiignore) | Per-OS and per-host exclusions, and repo files that aren't dotfiles |
 | [firefox/user.js](firefox/user.js) | Firefox prefs; `run_after_firefox-user-js.sh.tmpl` copies it into every profile in `profiles.ini` (native and Flatpak). Linux only: macOS denies the terminal access to Firefox's app data |
 | [patches/](patches) | Diffs applied to external files by the `run_after` script |

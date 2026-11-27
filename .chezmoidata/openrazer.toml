@@ -1,0 +1,6 @@
+# OpenRazer daemon release installed into a venv on blade15 by
+# .chezmoiscripts/run_onchange_after_openrazer-daemon.sh.tmpl.
+# sha256 of https://github.com/openrazer/openrazer/archive/refs/tags/v<version>.tar.gz
+[openrazer]
+version = "3.12.5"
+sha256 = "d82e2b18d1f9abe5ab5f0565c0ffee5fe0eeecd406134749db921093b23f515b"

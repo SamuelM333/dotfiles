@@ -16,6 +16,7 @@ Library
 .config/scopebuddy
 .config/just/blade15.just
 .config/just/scripts
+.config/systemd/user/rgb-watch.service
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}

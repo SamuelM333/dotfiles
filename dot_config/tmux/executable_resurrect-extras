@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Save or restore what tmux-resurrect doesn't keep. Called by resurrect's
+# post-save-all and post-restore-all hooks.
+#   - window options @color and @ai_title
+#   - each pane's agent session id and agent (@agent_session, @agent_cmd: set
+#     by the session-start hook of Claude Code or Cursor's CLI through
+#     `just -g agent-state started`); a restore runs `<agent> --resume <id>`
+#     (claude or agent) in that pane
+# Windows and panes are matched by session name, window index and pane index,
+# which resurrect keeps. Each resurrect save gets its own extras file beside it
+# (tmux_resurrect_<time>.extras), so pointing resurrect's `last` link back at an
+# older save brings back that save's extras too.
+set -uo pipefail
+
+# resurrect's own default directory (scripts/helpers.sh); @resurrect-dir isn't set.
+if [[ -d $HOME/.tmux/resurrect ]]; then
+  dir=$HOME/.tmux/resurrect
+else
+  dir=${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect
+fi
+save=$(readlink -- "$dir/last" 2>/dev/null) || exit 0
+save=${save##*/}
+file=$dir/${save%.txt}.extras
+sep=$'\x1f' # unit separator: can't appear in a session name or option value
+window_options=(@color @ai_title)
+
+case ${1:-} in
+  save)
+    tmp=$file.tmp
+    : >"$tmp"
+    while read -r id; do
+      line=window$sep$(tmux display-message -p -t "$id" '#{session_name}')$sep$(tmux display-message -p -t "$id" '#{window_index}')
+      for opt in "${window_options[@]}"; do
+        # -w without -g: only values set on the window, not the global default.
+        line+=$sep$(tmux show-options -wqv -t "$id" "$opt")
+      done
+      printf '%s\n' "$line" >>"$tmp"
+    done < <(tmux list-windows -a -F '#{window_id}')
+    while read -r id; do
+      agent_session=$(tmux show-options -pqv -t "$id" @agent_session)
+      [[ -n $agent_session ]] || continue
+      agent_cmd=$(tmux show-options -pqv -t "$id" @agent_cmd)
+      printf 'pane%s%s%s%s%s%s\n' "$sep" "$(tmux display-message -p -t "$id" "#{session_name}$sep#{window_index}$sep#{pane_index}")" \
+        "$sep" "$agent_session" "$sep" "${agent_cmd:-claude}" >>"$tmp"
+    done < <(tmux list-panes -a -F '#{pane_id}')
+    mv -- "$tmp" "$file"
+    # resurrect deletes old saves; drop their extras too.
+    for extras in "$dir"/*.extras; do
+      [[ -e ${extras%.extras}.txt ]] || rm -f -- "$extras"
+    done
+    ;;
+  restore)
+    [[ -r $file ]] || exit 0
+    while IFS=$sep read -r kind session window rest; do
+      case $kind in
+        window)
+          target="=$session:$window"
+          tmux has-session -t "$target" 2>/dev/null || continue
+          IFS=$sep read -r -a vals <<<"$rest"
+          for i in "${!window_options[@]}"; do
+            [[ -n ${vals[i]:-} ]] && tmux set-option -w -t "$target" "${window_options[i]}" "${vals[i]}"
+          done
+          ;;
+        pane)
+          IFS=$sep read -r pane agent_session agent_cmd <<<"$rest"
+          target="=$session:$window.$pane"
+          [[ $agent_session =~ ^[A-Za-z0-9-]+$ ]] || continue
+          agent_cmd=${agent_cmd:-claude}
+          case $agent_cmd in claude | agent) ;; *) continue ;; esac
+          # Only into a pane sitting at a shell: a pane that survived (a restore
+          # on a running server) may still have Claude or something else open.
+          # A pane restored just now may still run its shell's startup commands
+          # (pane_current_command flickers through them), so wait up to 5s.
+          at_shell=0
+          for _ in {1..50}; do
+            cmd=$(tmux display-message -p -t "$target" '#{pane_current_command}' 2>/dev/null) || break
+            case $cmd in zsh | bash | sh | fish) at_shell=1 && break ;; esac
+            sleep 0.1
+          done
+          ((at_shell)) || continue
+          tmux send-keys -t "$target" "$agent_cmd --resume $agent_session" Enter
+          # Cursor's CLI fires no sessionStart on --resume, so set the ids
+          # here or the next save drops this pane. Claude's hook overwrites them.
+          tmux set-option -p -t "$target" @agent_session "$agent_session"
+          tmux set-option -p -t "$target" @agent_cmd "$agent_cmd"
+          ;;
+      esac
+    done <"$file"
+    ;;
+  *)
+    echo "usage: resurrect-extras save|restore" >&2
+    exit 1
+    ;;
+esac

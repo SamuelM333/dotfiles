@@ -1,3 +1,10 @@
+{{- $ghosttyFontSize := promptIntOnce . "ghostty_font_size" "Ghostty font size" 16 -}}
+{{- $prettyHostname := promptStringOnce . "pretty_hostname" "Pretty hostname (empty for the real one)" "" -}}
 [data]
-  ghostty_font_size = 16
-  pretty_hostname = ""
+  ghostty_font_size = {{ $ghosttyFontSize }}
+  pretty_hostname = {{ $prettyHostname | quote }}
+
+# One master-password prompt per chezmoi run: unlock the vault once if it's
+# locked, share the session across bitwardenFields calls, lock it again after.
+[bitwarden]
+  unlock = "auto"

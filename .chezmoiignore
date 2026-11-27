@@ -4,6 +4,7 @@ CLAUDE.md
 firefox
 
 {{- if ne .chezmoi.os "darwin" }}
+.chezmoiscripts/load-environment-agent.sh
 .cursor
 Library
 {{- end }}
@@ -15,10 +16,12 @@ Library
 .config/scopebuddy
 .config/just/blade15.just
 .config/just/scripts
+.local/share/icons/hicolor/*/apps/com.github.encomjp.razercontrol.*
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}
 .chezmoiscripts/firefox-user-js.sh
+.chezmoiscripts/icon-cache.sh
 .claude
 .config/just/claude.just
 .config/environment.d
@@ -26,4 +29,8 @@ Library
 
 {{- if ne .chezmoi.os "linux" }}
 .gitconfig
+{{- end }}
+
+{{- if not (stat "/var/lib/flatpak/app/ch.protonmail.protonmail-bridge") }}
+.config/autostart/ch.protonmail.protonmail-bridge.desktop
 {{- end }}

@@ -1,0 +1,5 @@
+# XDG dirs from .chezmoidata/xdg.toml. Set here so the systemd user manager
+# has them too (Quadlet units such as nix-builder mount from XDG_PROJECTS_DIR).
+{{ range $name, $path := .xdg -}}
+{{ $name }}=${HOME}/{{ $path }}
+{{ end -}}

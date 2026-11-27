@@ -3,22 +3,22 @@
 # Agent the launcher starts: Claude Code on the Linux hosts, Cursor's CLI on macOS.
 ai_agent := env("AI_AGENT", if os() == "macos" { "agent" } else { "claude" })
 
-# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab (default for a new window: random), -v/--vim (or AI_VIM=1) adds nvim beside it
+# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab (default for a new window: random), -e/--editor (or AI_EDITOR=1) adds $EDITOR beside it
 [no-cd]
 [positional-arguments]
 ai *args:
     #!/usr/bin/env bash
     set -euo pipefail
     dir=$PWD
-    # Neovim beside the agent is off by default: -v/--vim or a truthy AI_VIM turns it on.
-    case ${AI_VIM:-} in
-      1 | y | Y | yes | true) vim=1 ;;
-      *) vim=0 ;;
+    # The editor beside the agent is off by default: -e/--editor or a truthy AI_EDITOR turns it on.
+    case ${AI_EDITOR:-} in
+      1 | y | Y | yes | true) editor=1 ;;
+      *) editor=0 ;;
     esac
     positional=()
     for arg in "$@"; do
       case $arg in
-        -v | --vim) vim=1 ;;
+        -e | --editor) editor=1 ;;
         *) positional+=("$arg") ;;
       esac
     done
@@ -79,10 +79,11 @@ ai *args:
         color=${free[RANDOM % ${#free[@]}]}
       fi
       first_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
-      # Start each through the shell, so quitting nvim or the agent leaves a prompt.
-      if ((vim)); then
+      # Start each through the shell, so quitting the editor or the agent leaves a
+      # prompt. The pane's shell expands $VISUAL/$EDITOR, so it opens the user's editor.
+      if ((editor)); then
         agent_pane=$(tmux split-window -h -d -l 45% -t "$first_pane" -c "$dir" -P -F '#{pane_id}')
-        tmux send-keys -t "$first_pane" "nvim ." Enter
+        tmux send-keys -t "$first_pane" '${VISUAL:-${EDITOR:-vi}} .' Enter
         tmux send-keys -t "$agent_pane" "$agent" Enter
         tmux select-pane -t "$first_pane"
       else

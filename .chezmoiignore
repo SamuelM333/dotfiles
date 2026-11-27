@@ -17,6 +17,8 @@ Library
 .config/just/blade15.just
 .config/just/scripts
 .local/share/icons/hicolor/*/apps/com.github.encomjp.razercontrol.*
+.config/systemd/user/openrazer-daemon.service
+.chezmoiscripts/openrazer-daemon.sh
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}

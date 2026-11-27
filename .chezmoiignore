@@ -16,6 +16,7 @@ Library
 .config/scopebuddy
 .config/just/blade15.just
 .config/just/scripts
+.local/share/icons/hicolor/*/apps/com.github.encomjp.razercontrol.*
 {{- end }}
 
 {{- if ne .chezmoi.os "linux" }}

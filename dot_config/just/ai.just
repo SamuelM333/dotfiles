@@ -3,7 +3,7 @@
 # Agent the launcher starts: Claude Code on the Linux hosts, Cursor's CLI on macOS.
 ai_agent := env("AI_AGENT", if os() == "macos" { "agent" } else { "claude" })
 
-# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab, -v/--vim (or AI_VIM=1) adds nvim beside it
+# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab (default for a new window: random), -v/--vim (or AI_VIM=1) adds nvim beside it
 [no-cd]
 [positional-arguments]
 ai *args:
@@ -65,6 +65,19 @@ ai *args:
         win=$(tmux new-session -d -s "$session" -n "$title" -c "$dir" -P -F '#{window_id}')
       fi
       tmux set-option -w -t "$win" @ai_title "$title"
+      # No COLOR: a random one from the palette of the prefix + C menu
+      # (which-key.conf), skipping colors other windows in the session use
+      # while any are left.
+      if [[ -z $color ]]; then
+        palette=(colour203 colour215 colour221 colour114 colour80 colour75 colour141 colour211)
+        used=" $(tmux list-windows -t "=$session" -F '#{@color}' | tr '\n' ' ')"
+        free=()
+        for c in "${palette[@]}"; do
+          [[ $used == *" $c "* ]] || free+=("$c")
+        done
+        ((${#free[@]})) || free=("${palette[@]}")
+        color=${free[RANDOM % ${#free[@]}]}
+      fi
       first_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
       # Start each through the shell, so quitting nvim or the agent leaves a prompt.
       if ((vim)); then

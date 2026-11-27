@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.1
+Name=Proton Mail Bridge
+GenericName=Proton Mail Bridge for Linux
+Comment=Proton Mail Bridge, started at login without a window
+Icon=ch.protonmail.protonmail-bridge
+Exec=/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=protonmail-bridge ch.protonmail.protonmail-bridge --no-window
+Terminal=false
+Categories=Office;Email
+StartupWMClass=Proton Mail Bridge
+X-Flatpak=ch.protonmail.protonmail-bridge
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=5
+Hidden=false

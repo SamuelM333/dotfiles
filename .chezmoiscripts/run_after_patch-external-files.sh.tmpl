@@ -1,18 +1,27 @@
 #!/bin/bash
 
-TARGET_FILE={{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl" | quote }}
-PATCH_FILE={{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
-
-# Check if the target file exists before trying to patch
-if [ -f "$TARGET_FILE" ]; then
+# apply_patch TARGET_FILE PATCH_FILE
+apply_patch() {
+    local target_file=$1 patch_file=$2
+    # Check if the target file exists before trying to patch
+    [ -f "$target_file" ] || return 0
     # Probe with --dry-run first: it writes nothing, so no .rej files and no
     # "previously applied" noise. A patch that reverses cleanly is already applied.
-    if patch -R -f -s --dry-run "$TARGET_FILE" < "$PATCH_FILE" > /dev/null 2>&1; then
+    if patch -R -f -s --dry-run "$target_file" < "$patch_file" > /dev/null 2>&1; then
         :
-    elif patch -f -s --dry-run "$TARGET_FILE" < "$PATCH_FILE" > /dev/null 2>&1; then
-        patch -f -s "$TARGET_FILE" < "$PATCH_FILE"
+    elif patch -f -s --dry-run "$target_file" < "$patch_file" > /dev/null 2>&1; then
+        patch -f -s "$target_file" < "$patch_file"
     else
         # Upstream changed the file; warn without halting 'chezmoi apply'
-        echo "warning: $PATCH_FILE no longer applies to $TARGET_FILE" >&2
+        echo "warning: $patch_file no longer applies to $target_file" >&2
     fi
-fi
+}
+
+apply_patch {{ joinPath .chezmoi.homeDir ".config/ghostty/shaders/ghostty-shaders/retro-terminal.glsl" | quote }} \
+    {{ joinPath .chezmoi.sourceDir "patches/retro-terminal-flat.glsl.diff" | quote }}
+
+# continuum sleeps 1s before its auto-restore, and tmux.conf's run-shell waits
+# for that restore, so the sleep only delays the server start (and `ai`).
+# tmux.conf loads continuum after resurrect, so the restore needs no wait.
+apply_patch {{ joinPath .chezmoi.homeDir ".config/tmux/plugins/tmux-continuum/scripts/continuum_restore.sh" | quote }} \
+    {{ joinPath .chezmoi.sourceDir "patches/continuum-restore-no-sleep.diff" | quote }}

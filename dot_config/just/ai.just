@@ -3,13 +3,26 @@
 # Agent the launcher starts: Claude Code on the Linux hosts, Cursor's CLI on macOS.
 ai_agent := env("AI_AGENT", if os() == "macos" { "agent" } else { "claude" })
 
-# Open (or switch to) a tmux window TITLE (default: current dir name) with nvim + the agent in the current dir; COLOR colors its tab
+# Open (or switch to) a tmux window TITLE (default: current dir name) with the agent in the current dir; COLOR colors its tab (default for a new window: random), -e/--editor (or AI_EDITOR=1) adds $EDITOR beside it
 [no-cd]
 [positional-arguments]
-ai title="" color="":
+ai *args:
     #!/usr/bin/env bash
     set -euo pipefail
     dir=$PWD
+    # The editor beside the agent is off by default: -e/--editor or a truthy AI_EDITOR turns it on.
+    case ${AI_EDITOR:-} in
+      1 | y | Y | yes | true) editor=1 ;;
+      *) editor=0 ;;
+    esac
+    positional=()
+    for arg in "$@"; do
+      case $arg in
+        -e | --editor) editor=1 ;;
+        *) positional+=("$arg") ;;
+      esac
+    done
+    set -- "${positional[@]}"
     title=${1:-}
     # The prefix + a prompt sets AI_NEW_WINDOW: a blank title there always opens a
     # new window named after the dir, even if one with that name exists.
@@ -28,6 +41,14 @@ ai title="" color="":
       session=${AI_SESSION:-ai}
     fi
 
+    # Start the server before looking for windows. Loading tmux.conf runs
+    # continuum's auto-restore, and start-server returns only after it ends, so
+    # a restored session and its windows count as existing below instead of
+    # colliding with a new one. Continuum skips that restore when any other tmux
+    # server runs (another -L socket or TMUX_TMPDIR), so a server still without
+    # sessions after the config restores here. A no-op when a session exists.
+    tmux start-server \; run-shell "tmux has-session 2>/dev/null || ~/.config/tmux/plugins/tmux-resurrect/scripts/restore.sh"
+
     # Existing window with this title, matched on @ai_title so a manual rename
     # doesn't create a duplicate. tmux turns tabs into "_" in -F output, so
     # split on the first space (window ids never contain one, titles may).
@@ -44,12 +65,30 @@ ai title="" color="":
         win=$(tmux new-session -d -s "$session" -n "$title" -c "$dir" -P -F '#{window_id}')
       fi
       tmux set-option -w -t "$win" @ai_title "$title"
-      editor_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
-      agent_pane=$(tmux split-window -h -d -l 45% -t "$editor_pane" -c "$dir" -P -F '#{pane_id}')
-      # Start both through the shell, so quitting nvim or the agent leaves a prompt.
-      tmux send-keys -t "$editor_pane" "nvim ." Enter
-      tmux send-keys -t "$agent_pane" "$agent" Enter
-      tmux select-pane -t "$editor_pane"
+      # No COLOR: a random one from the palette of the prefix + C menu
+      # (which-key.conf), skipping colors other windows in the session use
+      # while any are left.
+      if [[ -z $color ]]; then
+        palette=(colour203 colour215 colour221 colour114 colour80 colour75 colour141 colour211)
+        used=" $(tmux list-windows -t "=$session" -F '#{@color}' | tr '\n' ' ')"
+        free=()
+        for c in "${palette[@]}"; do
+          [[ $used == *" $c "* ]] || free+=("$c")
+        done
+        ((${#free[@]})) || free=("${palette[@]}")
+        color=${free[RANDOM % ${#free[@]}]}
+      fi
+      first_pane=$(tmux display-message -p -t "$win" '#{pane_id}')
+      # Start each through the shell, so quitting the editor or the agent leaves a
+      # prompt. The pane's shell expands $VISUAL/$EDITOR, so it opens the user's editor.
+      if ((editor)); then
+        agent_pane=$(tmux split-window -h -d -l 45% -t "$first_pane" -c "$dir" -P -F '#{pane_id}')
+        tmux send-keys -t "$first_pane" '${VISUAL:-${EDITOR:-vi}} .' Enter
+        tmux send-keys -t "$agent_pane" "$agent" Enter
+        tmux select-pane -t "$first_pane"
+      else
+        tmux send-keys -t "$first_pane" "$agent" Enter
+      fi
     fi
 
     if [[ -n $color ]]; then
@@ -65,13 +104,14 @@ ai title="" color="":
       echo "ai: $session:$title is ready, attach with: tmux attach -t $session" >&2
     fi
 
-# Mark the tmux window this agent runs in as working, waiting or done (or clear it); called from agent hooks
+# Mark the tmux window this agent runs in as working, waiting or done (or clear it), or record its session id on the pane (started/ended, AGENT: claude or agent); called from agent hooks
 [no-cd]
 [positional-arguments]
-agent-state state:
+agent-state state agent="claude":
     #!/usr/bin/env bash
     # Never fails, so a hook can't block the agent.
     state=$1
+    agent=${2:-claude}
 
     # Hooks get JSON on stdin; read it all so the agent isn't left writing to a pipe.
     input=
@@ -94,7 +134,25 @@ agent-state state:
     case $state in
       working | waiting | done) tmux set-option -w -t "$pane" @agent_state "$state" 2>/dev/null ;;
       clear) tmux set-option -wu -t "$pane" @agent_state 2>/dev/null ;;
-      *) echo "usage: agent-state working|waiting|done|clear" >&2; exit 0 ;;
+      # The pane keeps the agent's session id (from the hook's JSON: Claude
+      # sends session_id, Cursor conversation_id) and which agent it is, so a
+      # tmux restore can resume that exact conversation (see resurrect-extras).
+      started)
+        id=
+        if [[ -n $input ]] && command -v jq >/dev/null 2>&1; then
+          id=$(jq -r '.session_id // .conversation_id // empty' <<<"$input" 2>/dev/null)
+        fi
+        case $agent in claude | agent) ;; *) exit 0 ;; esac
+        if [[ $id =~ ^[A-Za-z0-9-]+$ ]]; then
+          tmux set-option -p -t "$pane" @agent_session "$id" 2>/dev/null
+          tmux set-option -p -t "$pane" @agent_cmd "$agent" 2>/dev/null
+        fi
+        ;;
+      ended)
+        tmux set-option -pu -t "$pane" @agent_session 2>/dev/null
+        tmux set-option -pu -t "$pane" @agent_cmd 2>/dev/null
+        ;;
+      *) echo "usage: agent-state working|waiting|done|clear|started|ended [claude|agent]" >&2; exit 0 ;;
     esac
 
     [[ $state == waiting || $state == done ]] || exit 0
